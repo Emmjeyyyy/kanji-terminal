@@ -130,7 +130,7 @@ export default function App() {
       {/* Top Navigation - Fixed Height */}
       <nav className="flex flex-col md:flex-row justify-between items-center mb-4 md:mb-6 border-b border-current pb-2 select-none shrink-0 gap-2 md:gap-0">
         <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto justify-between md:justify-start">
-            <span className="font-bold text-lg md:text-xl tracking-tighter border-r border-current pr-2 md:pr-4 mr-1 md:mr-2 crt-text-glow whitespace-nowrap">CRT KANJI LAB</span>
+            <span className="font-bold text-lg md:text-xl tracking-tighter border-r border-current pr-2 md:pr-4 mr-1 md:mr-2 crt-text-glow whitespace-nowrap">KANJI TERMINAL</span>
             <div className="flex gap-2">
                 <button onClick={() => setCurrentView('dashboard')} className={`flex items-center gap-1 md:gap-2 transition-all duration-200 ${currentView === 'dashboard' ? 'opacity-100 font-bold text-shadow-[0_0_3px_currentColor]' : 'opacity-50 hover:opacity-100 hover:text-shadow-[0_0_3px_currentColor]'}`}>
                     <Home size={16} /> <span className="hidden sm:inline">DASHBOARD</span>
