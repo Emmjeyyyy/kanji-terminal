@@ -3,7 +3,7 @@ import { CRTContainer } from './components/CRTContainer';
 import { Dashboard } from './components/Dashboard';
 import { LearnMode } from './components/LearnMode';
 import { QuizMode } from './components/QuizMode';
-import { AppState, UserProgress, QuizQuestion } from './types';
+import { AppState, UserProgress, QuizQuestion, KanjiData, QuizType } from './types';
 import { kanjiList } from './data/kanji';
 import { getDueItems } from './utils/srs';
 import { Home, Book, Brain, Trophy, Settings, Power } from 'lucide-react';
@@ -94,13 +94,44 @@ export default function App() {
       setCurrentView('quiz_active');
   };
 
+  const shuffle = <T,>(array: T[]): T[] => {
+    const newArr = [...array];
+    for (let i = newArr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+    }
+    return newArr;
+  };
+
   const generateQuestions = (ids: string[]) => {
       const questions: QuizQuestion[] = ids.map(id => {
           const k = kanjiList.find(i => i.id === id)!;
-          // Randomize question type
           const r = Math.random();
-          const type = r > 0.6 ? 'meaning' : (r > 0.3 ? 'reading' : 'reverse');
-          return { kanji: k, type };
+          const type: QuizType = r > 0.6 ? 'meaning' : (r > 0.3 ? 'reading' : 'reverse');
+          
+          let getOptionValue: (item: KanjiData) => string;
+          
+          if (type === 'meaning') {
+              getOptionValue = (item) => item.meaning;
+          } else if (type === 'reading') {
+              getOptionValue = (item) => {
+                  const on = item.onyomi.join(', ');
+                  const kun = item.kunyomi.join(', ');
+                  return on ? (kun ? `${on} / ${kun}` : on) : kun || '---';
+              };
+          } else { // reverse
+              getOptionValue = (item) => item.char;
+          }
+
+          const correctAnswer = getOptionValue(k);
+          
+          // Find 3 distractors that don't have the exact same answer string
+          const potentialDistractors = kanjiList.filter(item => item.id !== id && getOptionValue(item) !== correctAnswer);
+          const distractors = potentialDistractors.sort(() => 0.5 - Math.random()).slice(0, 3);
+          
+          const options = shuffle([correctAnswer, ...distractors.map(getOptionValue)]);
+
+          return { kanji: k, type, options, correctAnswer };
       });
       setActiveQuizQuestions(questions);
   };

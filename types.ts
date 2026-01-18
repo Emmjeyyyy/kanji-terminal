@@ -46,5 +46,6 @@ export type QuizType = 'meaning' | 'reading' | 'reverse';
 export interface QuizQuestion {
   kanji: KanjiData;
   type: QuizType;
-  options?: string[]; // For multiple choice
+  options: string[]; // Array of choices
+  correctAnswer: string; // The correct string to match against
 }

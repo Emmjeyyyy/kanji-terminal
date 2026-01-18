@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { KanjiData, QuizQuestion, AppSettings, AppState, UserProgress } from '../types';
+import React, { useState, useEffect } from 'react';
+import { QuizQuestion, AppSettings, AppState, UserProgress } from '../types';
 import { calculateReview } from '../utils/srs';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, Timer, Keyboard } from 'lucide-react';
+import { Check, X, Timer, ArrowRight, MousePointer2 } from 'lucide-react';
 
 interface QuizModeProps {
   questions: QuizQuestion[];
@@ -16,11 +16,10 @@ interface QuizModeProps {
 export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, settings, appState, onExit, isTimed }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [userAnswer, setUserAnswer] = useState('');
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const [sessionResults, setSessionResults] = useState<Record<string, UserProgress>>({});
   const [timeLeft, setTimeLeft] = useState(isTimed ? 300 : 0);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const currentQuestion = questions[currentIndex];
   const isLast = currentIndex === questions.length - 1;
@@ -34,55 +33,25 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
     }
   }, [timeLeft, isTimed]);
 
-  useEffect(() => {
-    if (inputRef.current && !showAnswer) {
-      // Small delay to ensure render on mobile
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
-  }, [currentIndex, showAnswer]);
-
   const handleFinish = () => {
     onComplete(sessionResults);
   };
 
-  const handleSubmit = (forcedQuality?: number) => {
-    if (showAnswer) {
-      if (isLast) {
-        handleFinish();
-      } else {
-        setCurrentIndex(i => i + 1);
-        setShowAnswer(false);
-        setFeedback(null);
-        setUserAnswer('');
-      }
-      return;
-    }
+  const handleOptionClick = (option: string) => {
+    if (showAnswer) return;
 
-    const q = currentQuestion;
-    let isCorrect = false;
-    
-    if (q.type === 'meaning') {
-      isCorrect = q.kanji.meaning.toLowerCase().includes(userAnswer.toLowerCase()) && userAnswer.length > 2;
-    } else if (q.type === 'reading') {
-      const allReadings = [...q.kanji.onyomi, ...q.kanji.kunyomi].map(r => r.replace('.', ''));
-      isCorrect = allReadings.includes(userAnswer);
-    } else if (q.type === 'reverse') {
-        isCorrect = userAnswer === q.kanji.char;
-    }
-
-    if (forcedQuality !== undefined) {
-      processResult(forcedQuality);
-      return;
-    }
+    setSelectedOption(option);
+    const isCorrect = option === currentQuestion.correctAnswer;
     
     setFeedback(isCorrect ? 'correct' : 'incorrect');
     setShowAnswer(true);
-    
-    const quality = isCorrect ? 5 : 2; 
-    processResult(quality);
+
+    // Default Quality: 5 (Easy) for correct, 2 (Hard) for incorrect
+    const defaultQuality = isCorrect ? 5 : 2;
+    saveResult(defaultQuality);
   };
 
-  const processResult = (quality: number) => {
+  const saveResult = (quality: number) => {
      const kId = currentQuestion.kanji.id;
      const currentProg = appState.progress[kId] || sessionResults[kId];
      const newProg = calculateReview(kId, currentProg, quality);
@@ -91,25 +60,25 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
        ...prev,
        [kId]: newProg
      }));
+  };
 
-     if (feedback === null) {
-        if (isLast) {
-            handleFinish();
-        } else {
-            setCurrentIndex(i => i + 1);
-            setShowAnswer(false);
-            setFeedback(null);
-            setUserAnswer('');
-        }
-     }
+  const handleNext = () => {
+    if (isLast) {
+      handleFinish();
+    } else {
+      setCurrentIndex(i => i + 1);
+      setShowAnswer(false);
+      setSelectedOption(null);
+      setFeedback(null);
+    }
   };
 
   if (!currentQuestion) return <div>No questions loaded.</div>;
 
   return (
-    <div className="flex flex-col h-full max-w-4xl mx-auto w-full overflow-y-auto custom-scrollbar p-4">
+    <div className="flex flex-col h-full max-w-5xl mx-auto w-full overflow-y-auto custom-scrollbar p-4">
       {/* Header */}
-      <div className="flex justify-between items-center border-b-2 border-current pb-6 mb-6 md:mb-10 shrink-0">
+      <div className="flex justify-between items-center border-b-2 border-current pb-4 mb-4 md:mb-8 shrink-0">
         <div className="flex items-center gap-4 md:gap-6">
           <button onClick={onExit} className="hover:bg-white/20 px-3 py-1.5 rounded transition-colors text-sm md:text-base uppercase tracking-widest border border-current font-bold">[ ESC ] Abort</button>
           <span className="font-mono text-xl md:text-2xl font-bold">Q: {currentIndex + 1}/{questions.length}</span>
@@ -123,94 +92,101 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
       </div>
 
       {/* Question Area */}
-      <div className="flex-1 flex flex-col items-center justify-center min-h-0">
+      <div className="flex-1 flex flex-col items-center justify-start min-h-0 relative">
         <AnimatePresence mode='wait'>
           <motion.div 
             key={currentIndex}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="text-center w-full flex flex-col items-center"
+            className="w-full flex flex-col items-center h-full"
           >
-             <h2 className="text-base md:text-xl uppercase tracking-[0.2em] mb-4 md:mb-8 opacity-80 font-bold">
-               {currentQuestion.type === 'reading' ? 'Identify Reading' : 
-                currentQuestion.type === 'meaning' ? 'Identify Meaning' : 'Identify Kanji'}
+             <h2 className="text-base md:text-xl uppercase tracking-[0.3em] mb-4 md:mb-6 opacity-80 font-bold border-b border-current/30 pb-2 w-full text-center">
+               {currentQuestion.type === 'reading' ? 'Select Correct Reading' : 
+                currentQuestion.type === 'meaning' ? 'Select Correct Meaning' : 'Select Matching Kanji'}
              </h2>
              
-             {/* Responsive Text Size for Character */}
-             <div className="text-[7rem] md:text-[12rem] leading-none font-bold mb-6 md:mb-10 crt-text-glow">
-               {currentQuestion.type === 'reverse' ? <span className="text-5xl md:text-7xl">{currentQuestion.kanji.meaning}</span> : currentQuestion.kanji.char}
+             {/* Large Character Display */}
+             <div className="flex-shrink-0 mb-6 md:mb-10 text-center">
+               <div className="text-[6rem] md:text-[10rem] leading-none font-bold crt-text-glow transition-all duration-300">
+                 {currentQuestion.type === 'reverse' ? <span className="text-4xl md:text-7xl max-w-2xl block leading-tight">{currentQuestion.kanji.meaning}</span> : currentQuestion.kanji.char}
+               </div>
+               {currentQuestion.type === 'reverse' && <div className="text-lg md:text-xl opacity-60 mt-2 font-mono uppercase tracking-widest">Identify Character</div>}
              </div>
              
-             {/* Interaction Area */}
+             {/* Multiple Choice Grid */}
              {!showAnswer ? (
-                <div className="w-full max-w-lg mx-auto space-y-6 md:space-y-8">
-                   <div className="relative">
-                     <input
-                       ref={inputRef}
-                       type="text"
-                       value={userAnswer}
-                       onChange={(e) => setUserAnswer(e.target.value)}
-                       onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-                       placeholder="Type answer..."
-                       className="w-full bg-transparent border-b-4 border-current p-3 text-2xl md:text-4xl font-mono text-center focus:outline-none focus:border-[var(--theme-color)] focus:shadow-[0_4px_15px_-2px_var(--theme-color)] transition-all placeholder:opacity-40 font-bold uppercase"
-                       autoComplete="off"
-                     />
-                     <Keyboard className="absolute right-2 top-4 opacity-40 w-6 h-6 hidden md:block" />
-                   </div>
-                   
-                   <div className="flex gap-4 md:gap-6 justify-center mt-8 md:mt-12 w-full">
-                      <button 
-                         onClick={() => { setShowAnswer(true); setFeedback('incorrect'); processResult(0); }}
-                         className="flex-1 px-6 md:px-10 py-4 border-2 border-current transition-all duration-200 uppercase text-sm md:text-base tracking-[0.2em] font-bold hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_20px_var(--theme-color)] hover:scale-105"
-                      >
-                        Don't Know
-                      </button>
-                      <button 
-                         onClick={() => handleSubmit()}
-                         className="flex-1 px-6 md:px-10 py-4 bg-[var(--theme-color)] text-black border-2 border-current transition-all duration-200 font-bold uppercase text-sm md:text-base tracking-[0.2em] shadow-[0_0_15px_var(--theme-color)] hover:bg-white hover:text-black hover:shadow-[0_0_30px_var(--theme-color)] hover:scale-105"
-                      >
-                        Submit
-                      </button>
-                   </div>
+                <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-4xl">
+                   {currentQuestion.options.map((option, idx) => (
+                     <button
+                       key={idx}
+                       onClick={() => handleOptionClick(option)}
+                       className="group relative border-2 border-current p-4 md:p-6 text-left transition-all duration-200 hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_20px_var(--theme-color)] hover:scale-[1.02] active:scale-[0.98] flex items-center gap-4"
+                     >
+                        <div className="w-8 h-8 md:w-10 md:h-10 border-2 border-current flex items-center justify-center font-bold text-lg md:text-xl group-hover:border-black">
+                          {idx + 1}
+                        </div>
+                        <span className="text-xl md:text-3xl font-bold font-mono leading-tight">{option}</span>
+                        <MousePointer2 className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6" />
+                     </button>
+                   ))}
                 </div>
              ) : (
                <motion.div 
                  initial={{ opacity: 0, y: 10 }}
                  animate={{ opacity: 1, y: 0 }}
-                 className="w-full max-w-2xl mx-auto text-left border-2 border-current p-6 md:p-8 bg-black/90 backdrop-blur-md rounded shadow-[0_0_30px_rgba(0,0,0,0.6)] mb-6"
+                 className="w-full max-w-3xl mx-auto flex flex-col h-full"
                >
-                 <div className="flex justify-between items-start mb-6">
-                    <div>
-                        <div className="text-4xl md:text-5xl mb-2 crt-text-glow font-bold">{currentQuestion.kanji.char}</div>
-                        <div className="text-xl md:text-2xl font-bold opacity-90">{currentQuestion.kanji.meaning}</div>
+                 {/* Feedback Banner */}
+                 <div className={`w-full p-4 mb-6 border-2 flex items-center justify-between ${feedback === 'correct' ? 'border-green-500 bg-green-900/30 text-green-400' : 'border-red-500 bg-red-900/30 text-red-400'}`}>
+                    <div className="flex items-center gap-3 text-2xl md:text-3xl font-bold uppercase tracking-wider">
+                       {feedback === 'correct' ? <Check className="w-8 h-8 md:w-10 md:h-10" /> : <X className="w-8 h-8 md:w-10 md:h-10" />}
+                       {feedback}
                     </div>
-                    {feedback && (
-                        <div className={`flex items-center gap-2 text-lg md:text-xl font-bold uppercase ${feedback === 'correct' ? 'text-green-400 drop-shadow-[0_0_8px_rgba(74,222,128,0.8)]' : 'text-red-400 drop-shadow-[0_0_8px_rgba(248,113,113,0.8)]'}`}>
-                           {feedback === 'correct' ? <Check size={28} /> : <X size={28} />} {feedback}
+                    {feedback === 'incorrect' && (
+                        <div className="text-right">
+                           <div className="text-xs uppercase opacity-70 font-bold">Correct Answer</div>
+                           <div className="text-xl md:text-2xl font-bold font-mono text-white">{currentQuestion.correctAnswer}</div>
                         </div>
                     )}
                  </div>
-                 
-                 <div className="grid grid-cols-2 gap-6 mb-8 text-base">
-                    <div>
-                        <span className="opacity-60 block mb-1 font-bold text-sm uppercase">Onyomi</span>
-                        <div className="font-mono text-lg md:text-xl font-bold">{currentQuestion.kanji.onyomi.join(', ')}</div>
-                    </div>
-                    <div>
-                        <span className="opacity-60 block mb-1 font-bold text-sm uppercase">Kunyomi</span>
-                        <div className="font-mono text-lg md:text-xl font-bold">{currentQuestion.kanji.kunyomi.join(', ')}</div>
-                    </div>
-                 </div>
-                 
-                 <div className="border-t-2 border-current/30 pt-6">
-                    <span className="opacity-60 block mb-3 text-sm uppercase font-bold tracking-wider">Self-Rating</span>
-                    <div className="grid grid-cols-4 gap-3">
-                        <button onClick={() => handleSubmit(0)} className="p-3 border border-red-900/50 text-red-400 hover:bg-red-500 hover:text-black transition-all text-xs md:text-sm font-bold uppercase tracking-wide">Blackout</button>
-                        <button onClick={() => handleSubmit(3)} className="p-3 border border-current hover:bg-[var(--theme-color)] hover:text-black transition-all text-xs md:text-sm font-bold uppercase tracking-wide">Hard</button>
-                        <button onClick={() => handleSubmit(4)} className="p-3 border border-current hover:bg-[var(--theme-color)] hover:text-black transition-all text-xs md:text-sm font-bold uppercase tracking-wide">Good</button>
-                        <button onClick={() => handleSubmit(5)} className="p-3 border border-green-900/50 text-green-400 hover:bg-green-500 hover:text-black transition-all text-xs md:text-sm font-bold uppercase tracking-wide">Easy</button>
-                    </div>
+
+                 {/* Info Card */}
+                 <div className="flex-1 border-2 border-current p-6 md:p-8 bg-black/80 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)] flex flex-col justify-between">
+                     <div className="flex flex-col md:flex-row gap-8">
+                        <div className="text-center md:text-left shrink-0">
+                            <div className="text-7xl md:text-8xl font-bold text-[var(--theme-color)] crt-text-glow leading-none mb-2">{currentQuestion.kanji.char}</div>
+                            <div className="text-xl md:text-2xl font-bold opacity-80 uppercase tracking-widest">{currentQuestion.kanji.meaning}</div>
+                        </div>
+                        
+                        <div className="flex-1 grid grid-cols-1 gap-6 content-center">
+                            <div className="border-l-4 border-current/30 pl-4">
+                                <span className="block text-xs uppercase opacity-60 font-bold tracking-widest mb-1">Onyomi (Chinese)</span>
+                                <div className="text-2xl md:text-3xl font-mono font-bold">{currentQuestion.kanji.onyomi.join(', ') || '-'}</div>
+                            </div>
+                            <div className="border-l-4 border-current/30 pl-4">
+                                <span className="block text-xs uppercase opacity-60 font-bold tracking-widest mb-1">Kunyomi (Japanese)</span>
+                                <div className="text-2xl md:text-3xl font-mono font-bold">{currentQuestion.kanji.kunyomi.join(', ') || '-'}</div>
+                            </div>
+                        </div>
+                     </div>
+
+                     {/* Action Bar */}
+                     <div className="mt-8 pt-6 border-t-2 border-current/30 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="flex gap-2 w-full md:w-auto">
+                            <span className="text-xs uppercase opacity-50 font-bold self-center mr-2 hidden md:inline">Override Rating:</span>
+                            <button onClick={() => saveResult(3)} className="flex-1 md:flex-none px-4 py-2 border border-current hover:bg-[var(--theme-color)] hover:text-black text-xs font-bold uppercase">Hard</button>
+                            <button onClick={() => saveResult(4)} className="flex-1 md:flex-none px-4 py-2 border border-current hover:bg-[var(--theme-color)] hover:text-black text-xs font-bold uppercase">Good</button>
+                            <button onClick={() => saveResult(5)} className="flex-1 md:flex-none px-4 py-2 border border-current hover:bg-[var(--theme-color)] hover:text-black text-xs font-bold uppercase">Easy</button>
+                        </div>
+                        
+                        <button 
+                            onClick={handleNext}
+                            className="w-full md:w-auto px-8 py-3 bg-[var(--theme-color)] text-black font-bold text-lg uppercase tracking-widest hover:bg-white hover:scale-105 transition-all shadow-[0_0_15px_var(--theme-color)] flex items-center justify-center gap-2"
+                        >
+                            {isLast ? 'Finish Session' : 'Next Data Block'} <ArrowRight className="w-5 h-5" />
+                        </button>
+                     </div>
                  </div>
                </motion.div>
              )}
