@@ -140,63 +140,63 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                <motion.div 
                  initial={{ opacity: 0, y: 10 }}
                  animate={{ opacity: 1, y: 0 }}
-                 className="w-full max-w-3xl mx-auto flex flex-col h-full overflow-hidden"
+                 className="w-full max-w-4xl mx-auto flex flex-col h-full overflow-hidden"
                >
-                 {/* Feedback Banner - Compact */}
-                 <div className={`w-full p-2 mb-2 border-2 flex items-center justify-between shrink-0 ${feedback === 'correct' ? 'border-green-500 bg-green-900/30 text-green-400' : 'border-red-500 bg-red-900/30 text-red-400'}`}>
-                    <div className="flex items-center gap-2 text-lg font-bold uppercase tracking-wider">
-                       {feedback === 'correct' ? <Check className="w-5 h-5" /> : <X className="w-5 h-5" />}
+                 {/* Feedback Banner - Larger Text */}
+                 <div className={`w-full p-3 md:p-4 mb-3 border-2 flex items-center justify-between shrink-0 ${feedback === 'correct' ? 'border-green-500 bg-green-900/30 text-green-400' : 'border-red-500 bg-red-900/30 text-red-400'}`}>
+                    <div className="flex items-center gap-3 text-xl md:text-3xl font-bold uppercase tracking-wider">
+                       {feedback === 'correct' ? <Check className="w-6 h-6 md:w-8 md:h-8" /> : <X className="w-6 h-6 md:w-8 md:h-8" />}
                        {feedback === 'correct' ? 'CORRECT' : 'INCORRECT'}
                     </div>
                     {feedback === 'incorrect' && (
                         <div className="text-right leading-none">
-                           <div className="text-[10px] uppercase opacity-70 font-bold">Answer</div>
-                           <div className="text-base font-bold font-mono text-white">{currentQuestion.correctAnswer}</div>
+                           <div className="text-xs md:text-sm uppercase opacity-70 font-bold mb-1">Correct Answer</div>
+                           <div className="text-lg md:text-2xl font-bold font-mono text-white">{currentQuestion.correctAnswer}</div>
                         </div>
                     )}
                  </div>
 
-                 {/* Info Card - Auto-fitting layout */}
-                 <div className="flex-1 border-2 border-current p-3 md:p-4 bg-black/80 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden min-h-0">
+                 {/* Info Card - Auto-fitting layout with Larger Text */}
+                 <div className="flex-1 border-2 border-current p-4 md:p-6 bg-black/80 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden min-h-0">
                      
                      <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0 pr-1">
                         {/* Header Row: Kanji + Meaning */}
-                        <div className="flex items-end gap-4 border-b border-current/30 pb-2 mb-2">
-                             <div className="text-5xl md:text-6xl font-bold text-[var(--theme-color)] crt-text-glow leading-none">{currentQuestion.kanji.char}</div>
+                        <div className="flex items-end gap-6 border-b border-current/30 pb-4 mb-4">
+                             <div className="text-6xl md:text-8xl font-bold text-[var(--theme-color)] crt-text-glow leading-none">{currentQuestion.kanji.char}</div>
                              <div className="pb-1 min-w-0 flex-1">
-                                 <div className="text-lg md:text-2xl font-bold opacity-90 uppercase tracking-widest leading-tight truncate">{currentQuestion.kanji.meaning}</div>
-                                 <div className="text-[10px] md:text-xs uppercase opacity-60 font-bold tracking-widest">JLPT {currentQuestion.kanji.level} • ID: {currentQuestion.kanji.id.toUpperCase()}</div>
+                                 <div className="text-2xl md:text-4xl font-bold opacity-90 uppercase tracking-widest leading-tight truncate mb-1">{currentQuestion.kanji.meaning}</div>
+                                 <div className="text-xs md:text-sm uppercase opacity-60 font-bold tracking-widest">JLPT {currentQuestion.kanji.level} • ID: {currentQuestion.kanji.id.toUpperCase()}</div>
                              </div>
                         </div>
 
-                        {/* Readings Grid - Compact */}
-                        <div className="grid grid-cols-2 gap-4 mb-3">
-                            <div className="border-l-2 border-current/30 pl-3">
-                                <span className="block text-[10px] uppercase opacity-60 font-bold tracking-widest text-[var(--theme-color)]">Onyomi (Chinese)</span>
-                                <div className="text-base md:text-lg font-mono font-bold leading-tight break-words">{currentQuestion.kanji.onyomi.join(', ') || '-'}</div>
+                        {/* Readings Grid - Larger Text */}
+                        <div className="grid grid-cols-2 gap-6 mb-6">
+                            <div className="border-l-4 border-current/30 pl-4">
+                                <span className="block text-xs md:text-sm uppercase opacity-60 font-bold tracking-widest text-[var(--theme-color)] mb-1">Onyomi (Chinese)</span>
+                                <div className="text-xl md:text-3xl font-mono font-bold leading-tight break-words">{currentQuestion.kanji.onyomi.join(', ') || '-'}</div>
                             </div>
-                            <div className="border-l-2 border-current/30 pl-3">
-                                <span className="block text-[10px] uppercase opacity-60 font-bold tracking-widest text-[var(--theme-color)]">Kunyomi (Japanese)</span>
-                                <div className="text-base md:text-lg font-mono font-bold leading-tight break-words">{currentQuestion.kanji.kunyomi.join(', ') || '-'}</div>
+                            <div className="border-l-4 border-current/30 pl-4">
+                                <span className="block text-xs md:text-sm uppercase opacity-60 font-bold tracking-widest text-[var(--theme-color)] mb-1">Kunyomi (Japanese)</span>
+                                <div className="text-xl md:text-3xl font-mono font-bold leading-tight break-words">{currentQuestion.kanji.kunyomi.join(', ') || '-'}</div>
                             </div>
                         </div>
 
-                         {/* Mini Vocab List - Limit to 2 items to save vertical space */}
+                         {/* Vocab List - Larger Text */}
                          {currentQuestion.kanji.examples.length > 0 && (
-                             <div className="bg-white/5 p-2 border border-current/20">
-                                 <span className="block text-[10px] uppercase opacity-50 font-bold tracking-widest mb-1">Examples</span>
-                                 <div className="space-y-1.5">
+                             <div className="bg-white/5 p-3 md:p-4 border border-current/20">
+                                 <span className="block text-xs md:text-sm uppercase opacity-50 font-bold tracking-widest mb-2">Examples</span>
+                                 <div className="space-y-3">
                                      {currentQuestion.kanji.examples.slice(0, 2).map((ex, i) => (
-                                         <div key={i} className="flex justify-between items-baseline text-xs opacity-90 border-b border-current/10 pb-1 last:border-0 last:pb-0">
-                                             <div className="flex gap-2 items-baseline">
-                                                <span className="font-bold text-sm">{ex.word}</span>
-                                                <span className="font-mono opacity-70">[{ex.reading}]</span>
+                                         <div key={i} className="flex justify-between items-baseline text-sm md:text-base opacity-90 border-b border-current/10 pb-2 last:border-0 last:pb-0">
+                                             <div className="flex gap-3 items-baseline">
+                                                <span className="font-bold text-lg md:text-xl text-[var(--theme-color)]">{ex.word}</span>
+                                                <span className="font-mono text-sm md:text-base opacity-70">[{ex.reading}]</span>
                                              </div>
-                                             <span className="text-right truncate ml-2 font-bold opacity-80">{ex.meaning}</span>
+                                             <span className="text-right truncate ml-4 font-bold opacity-80 text-base md:text-lg">{ex.meaning}</span>
                                          </div>
                                      ))}
                                      {currentQuestion.kanji.examples.length > 2 && (
-                                         <div className="text-[10px] opacity-40 text-center uppercase font-bold">
+                                         <div className="text-xs md:text-sm opacity-40 text-center uppercase font-bold pt-1">
                                              + {currentQuestion.kanji.examples.length - 2} more
                                          </div>
                                      )}
@@ -205,20 +205,20 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                          )}
                      </div>
 
-                     {/* Action Bar - Sticky at bottom of card */}
-                     <div className="mt-2 pt-2 border-t-2 border-current/30 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shrink-0">
-                        <div className="flex gap-2 items-center justify-center md:justify-start">
-                            <span className="text-[10px] uppercase opacity-50 font-bold mr-1 hidden md:inline whitespace-nowrap">Override Rating:</span>
-                            <button onClick={() => saveResult(3)} className="px-3 py-2 border border-current hover:bg-[var(--theme-color)] hover:text-black text-[10px] md:text-xs font-bold uppercase transition-colors min-w-[60px]">Hard</button>
-                            <button onClick={() => saveResult(4)} className="px-3 py-2 border border-current hover:bg-[var(--theme-color)] hover:text-black text-[10px] md:text-xs font-bold uppercase transition-colors min-w-[60px]">Good</button>
-                            <button onClick={() => saveResult(5)} className="px-3 py-2 border border-current hover:bg-[var(--theme-color)] hover:text-black text-[10px] md:text-xs font-bold uppercase transition-colors min-w-[60px]">Easy</button>
+                     {/* Action Bar - Sticky at bottom of card - Larger buttons */}
+                     <div className="mt-4 pt-4 border-t-2 border-current/30 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 shrink-0">
+                        <div className="flex gap-3 items-center justify-center md:justify-start">
+                            <span className="text-xs md:text-sm uppercase opacity-50 font-bold mr-2 hidden md:inline whitespace-nowrap">Override Rating:</span>
+                            <button onClick={() => saveResult(3)} className="px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Hard</button>
+                            <button onClick={() => saveResult(4)} className="px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Good</button>
+                            <button onClick={() => saveResult(5)} className="px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Easy</button>
                         </div>
                         
                         <button 
                             onClick={handleNext}
-                            className="px-6 py-2 bg-[var(--theme-color)] text-black font-bold text-sm md:text-base uppercase tracking-widest hover:bg-white hover:scale-105 transition-all shadow-[0_0_15px_var(--theme-color)] flex items-center justify-center gap-2 whitespace-nowrap"
+                            className="px-8 py-3 bg-[var(--theme-color)] text-black font-bold text-base md:text-lg uppercase tracking-widest hover:bg-white hover:scale-105 transition-all shadow-[0_0_20px_var(--theme-color)] flex items-center justify-center gap-3 whitespace-nowrap"
                         >
-                            {isLast ? 'Finish Session' : 'Next Data Block'} <ArrowRight className="w-4 h-4" />
+                            {isLast ? 'Finish Session' : 'Next Data Block'} <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
                         </button>
                      </div>
                  </div>
