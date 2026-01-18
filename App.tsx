@@ -199,34 +199,34 @@ export default function App() {
       {/* Main Content Render - Flex Grow and Scrollable */}
       <main className="flex-1 overflow-hidden flex flex-col min-h-0">
         {currentView === 'dashboard' && (
-            <div className="h-full flex flex-col gap-4 md:gap-6 overflow-hidden">
+            <div className="h-full flex flex-col gap-2 md:gap-4 overflow-hidden">
                 <div className="flex-1 min-h-0">
                     <Dashboard state={state} />
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 shrink-0 pb-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 shrink-0 pb-1">
                     <button 
                         onClick={startDailySession}
-                        className="group relative border-2 border-current p-4 md:p-6 text-left transition-all duration-300 overflow-hidden hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_30px_var(--theme-color)] active:scale-[0.99]"
+                        className="group relative border-2 border-current p-3 md:p-4 text-left transition-all duration-300 overflow-hidden hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_30px_var(--theme-color)] active:scale-[0.99]"
                     >
-                        <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-10 transition-opacity">
-                            <Brain size={48} className="md:w-16 md:h-16" />
+                        <div className="absolute top-0 right-0 p-2 md:p-3 opacity-20 group-hover:opacity-10 transition-opacity">
+                            <Brain size={32} className="md:w-12 md:h-12" />
                         </div>
-                        <h2 className="text-xl md:text-3xl font-bold mb-1 md:mb-2 tracking-wide">DAILY SESSION</h2>
-                        <p className="text-xs md:text-base opacity-80 font-mono group-hover:font-bold">
+                        <h2 className="text-lg md:text-2xl font-bold mb-1 tracking-wide">DAILY SESSION</h2>
+                        <p className="text-[10px] md:text-sm opacity-80 font-mono group-hover:font-bold">
                            {getDueItems(state.progress).length} items due for review.
                         </p>
                     </button>
                     
                     <button 
                         onClick={() => setCurrentView('quiz_setup')}
-                        className="group relative border-2 border-current p-4 md:p-6 text-left transition-all duration-300 overflow-hidden hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_30px_var(--theme-color)] active:scale-[0.99]"
+                        className="group relative border-2 border-current p-3 md:p-4 text-left transition-all duration-300 overflow-hidden hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_30px_var(--theme-color)] active:scale-[0.99]"
                     >
-                         <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-10 transition-opacity">
-                            <Trophy size={48} className="md:w-16 md:h-16" />
+                         <div className="absolute top-0 right-0 p-2 md:p-3 opacity-20 group-hover:opacity-10 transition-opacity">
+                            <Trophy size={32} className="md:w-12 md:h-12" />
                         </div>
-                        <h2 className="text-xl md:text-3xl font-bold mb-1 md:mb-2 tracking-wide">BOSS RUNS</h2>
-                        <p className="text-xs md:text-base opacity-80 font-mono group-hover:font-bold">
+                        <h2 className="text-lg md:text-2xl font-bold mb-1 tracking-wide">BOSS RUNS</h2>
+                        <p className="text-[10px] md:text-sm opacity-80 font-mono group-hover:font-bold">
                            Simulate JLPT exams (N5/N4).
                         </p>
                     </button>
