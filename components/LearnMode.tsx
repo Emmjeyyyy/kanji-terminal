@@ -108,8 +108,9 @@ export const LearnMode: React.FC = () => {
                         </div>
                         <h2 className="text-6xl md:text-9xl font-bold leading-none crt-text-glow text-[var(--theme-color)]">{selectedKanji.char}</h2>
                     </div>
-                    <div className="text-right relative z-10 max-w-[50%] md:max-w-xl">
-                        <div className="text-xl md:text-4xl font-bold mb-1 md:mb-2 leading-tight">{selectedKanji.meaning}</div>
+                    {/* Adjusted text size and added margin right as requested */}
+                    <div className="text-right relative z-10 max-w-[50%] md:max-w-xl pr-4 md:pr-8">
+                        <div className="text-2xl md:text-5xl font-bold mb-1 md:mb-2 leading-tight">{selectedKanji.meaning}</div>
                         <div className="h-1.5 w-full bg-[var(--theme-color)]/20 mt-2 md:mt-3 shadow-[0_0_5px_var(--theme-color)]">
                             <div className="h-full bg-[var(--theme-color)] w-1/3 animate-pulse shadow-[0_0_10px_var(--theme-color)]"></div>
                         </div>
