@@ -75,9 +75,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
       </div>
 
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mt-2">
-        <div className="lg:col-span-2 border border-current p-4 rounded bg-white/5 flex flex-col min-h-[200px]">
+        <div className="lg:col-span-2 border border-current p-4 rounded bg-white/5 flex flex-col min-h-[300px]">
             <h3 className="text-lg md:text-xl mb-4 font-bold border-b border-current/30 pb-2">Review Frequency (7 Days)</h3>
-            <div className="flex-1 w-full min-h-0">
+            <div className="flex-1 w-full min-h-[200px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} stroke="currentColor" />
