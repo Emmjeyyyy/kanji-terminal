@@ -107,16 +107,16 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
   if (!currentQuestion) return <div>No questions loaded.</div>;
 
   return (
-    <div className="flex flex-col h-full max-w-3xl mx-auto w-full overflow-y-auto custom-scrollbar p-2">
+    <div className="flex flex-col h-full max-w-4xl mx-auto w-full overflow-y-auto custom-scrollbar p-4">
       {/* Header */}
-      <div className="flex justify-between items-center border-b border-current pb-4 mb-4 md:mb-8 shrink-0">
-        <div className="flex items-center gap-2 md:gap-4">
-          <button onClick={onExit} className="hover:bg-white/20 px-2 py-1 rounded transition-colors text-xs md:text-sm uppercase tracking-widest border border-current/50">[ ESC ] Abort</button>
-          <span className="font-mono text-lg md:text-xl">Q: {currentIndex + 1}/{questions.length}</span>
+      <div className="flex justify-between items-center border-b-2 border-current pb-6 mb-6 md:mb-10 shrink-0">
+        <div className="flex items-center gap-4 md:gap-6">
+          <button onClick={onExit} className="hover:bg-white/20 px-3 py-1.5 rounded transition-colors text-sm md:text-base uppercase tracking-widest border border-current font-bold">[ ESC ] Abort</button>
+          <span className="font-mono text-xl md:text-2xl font-bold">Q: {currentIndex + 1}/{questions.length}</span>
         </div>
         {isTimed && (
-          <div className="flex items-center gap-2 font-mono text-lg md:text-xl">
-             <Timer className="w-4 h-4 md:w-5 md:h-5 animate-pulse" />
+          <div className="flex items-center gap-3 font-mono text-xl md:text-2xl font-bold">
+             <Timer className="w-5 h-5 md:w-6 md:h-6 animate-pulse" />
              {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
           </div>
         )}
@@ -132,19 +132,19 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
             exit={{ opacity: 0, x: -20 }}
             className="text-center w-full flex flex-col items-center"
           >
-             <h2 className="text-sm md:text-lg uppercase tracking-[0.2em] mb-2 md:mb-4 opacity-70">
+             <h2 className="text-base md:text-xl uppercase tracking-[0.2em] mb-4 md:mb-8 opacity-80 font-bold">
                {currentQuestion.type === 'reading' ? 'Identify Reading' : 
                 currentQuestion.type === 'meaning' ? 'Identify Meaning' : 'Identify Kanji'}
              </h2>
              
              {/* Responsive Text Size for Character */}
-             <div className="text-[6rem] md:text-[10rem] leading-none font-bold mb-4 md:mb-8 crt-text-glow">
-               {currentQuestion.type === 'reverse' ? <span className="text-4xl md:text-6xl">{currentQuestion.kanji.meaning}</span> : currentQuestion.kanji.char}
+             <div className="text-[7rem] md:text-[12rem] leading-none font-bold mb-6 md:mb-10 crt-text-glow">
+               {currentQuestion.type === 'reverse' ? <span className="text-5xl md:text-7xl">{currentQuestion.kanji.meaning}</span> : currentQuestion.kanji.char}
              </div>
              
              {/* Interaction Area */}
              {!showAnswer ? (
-                <div className="w-full max-w-md mx-auto space-y-4 md:space-y-6">
+                <div className="w-full max-w-lg mx-auto space-y-6 md:space-y-8">
                    <div className="relative">
                      <input
                        ref={inputRef}
@@ -153,22 +153,22 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                        onChange={(e) => setUserAnswer(e.target.value)}
                        onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                        placeholder="Type answer..."
-                       className="w-full bg-transparent border-b-2 border-current p-2 text-xl md:text-2xl font-mono text-center focus:outline-none focus:border-[var(--theme-color)] focus:shadow-[0_4px_10px_-2px_var(--theme-color)] transition-all placeholder:opacity-30"
+                       className="w-full bg-transparent border-b-4 border-current p-3 text-2xl md:text-4xl font-mono text-center focus:outline-none focus:border-[var(--theme-color)] focus:shadow-[0_4px_15px_-2px_var(--theme-color)] transition-all placeholder:opacity-40 font-bold uppercase"
                        autoComplete="off"
                      />
-                     <Keyboard className="absolute right-2 top-3 opacity-30 w-5 h-5 hidden md:block" />
+                     <Keyboard className="absolute right-2 top-4 opacity-40 w-6 h-6 hidden md:block" />
                    </div>
                    
-                   <div className="flex gap-2 md:gap-4 justify-center mt-6 md:mt-10 w-full">
+                   <div className="flex gap-4 md:gap-6 justify-center mt-8 md:mt-12 w-full">
                       <button 
                          onClick={() => { setShowAnswer(true); setFeedback('incorrect'); processResult(0); }}
-                         className="flex-1 px-4 md:px-8 py-3 border border-current transition-all duration-200 uppercase text-xs md:text-sm tracking-[0.2em] font-bold hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] hover:scale-105"
+                         className="flex-1 px-6 md:px-10 py-4 border-2 border-current transition-all duration-200 uppercase text-sm md:text-base tracking-[0.2em] font-bold hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_20px_var(--theme-color)] hover:scale-105"
                       >
                         Don't Know
                       </button>
                       <button 
                          onClick={() => handleSubmit()}
-                         className="flex-1 px-4 md:px-8 py-3 bg-[var(--theme-color)] text-black border border-current transition-all duration-200 font-bold uppercase text-xs md:text-sm tracking-[0.2em] shadow-[0_0_10px_var(--theme-color)] hover:bg-white hover:text-black hover:shadow-[0_0_25px_var(--theme-color)] hover:scale-105"
+                         className="flex-1 px-6 md:px-10 py-4 bg-[var(--theme-color)] text-black border-2 border-current transition-all duration-200 font-bold uppercase text-sm md:text-base tracking-[0.2em] shadow-[0_0_15px_var(--theme-color)] hover:bg-white hover:text-black hover:shadow-[0_0_30px_var(--theme-color)] hover:scale-105"
                       >
                         Submit
                       </button>
@@ -178,38 +178,38 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                <motion.div 
                  initial={{ opacity: 0, y: 10 }}
                  animate={{ opacity: 1, y: 0 }}
-                 className="w-full max-w-xl mx-auto text-left border border-current p-4 md:p-6 bg-black/80 backdrop-blur-sm rounded shadow-[0_0_20px_rgba(0,0,0,0.5)] mb-4"
+                 className="w-full max-w-2xl mx-auto text-left border-2 border-current p-6 md:p-8 bg-black/90 backdrop-blur-md rounded shadow-[0_0_30px_rgba(0,0,0,0.6)] mb-6"
                >
-                 <div className="flex justify-between items-start mb-4">
+                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <div className="text-3xl md:text-4xl mb-2 crt-text-glow">{currentQuestion.kanji.char}</div>
-                        <div className="text-lg md:text-xl font-bold">{currentQuestion.kanji.meaning}</div>
+                        <div className="text-4xl md:text-5xl mb-2 crt-text-glow font-bold">{currentQuestion.kanji.char}</div>
+                        <div className="text-xl md:text-2xl font-bold opacity-90">{currentQuestion.kanji.meaning}</div>
                     </div>
                     {feedback && (
-                        <div className={`flex items-center gap-2 text-base md:text-lg font-bold uppercase ${feedback === 'correct' ? 'text-green-400 drop-shadow-[0_0_5px_rgba(74,222,128,0.8)]' : 'text-red-400 drop-shadow-[0_0_5px_rgba(248,113,113,0.8)]'}`}>
-                           {feedback === 'correct' ? <Check size={20} /> : <X size={20} />} {feedback}
+                        <div className={`flex items-center gap-2 text-lg md:text-xl font-bold uppercase ${feedback === 'correct' ? 'text-green-400 drop-shadow-[0_0_8px_rgba(74,222,128,0.8)]' : 'text-red-400 drop-shadow-[0_0_8px_rgba(248,113,113,0.8)]'}`}>
+                           {feedback === 'correct' ? <Check size={28} /> : <X size={28} />} {feedback}
                         </div>
                     )}
                  </div>
                  
-                 <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
+                 <div className="grid grid-cols-2 gap-6 mb-8 text-base">
                     <div>
-                        <span className="opacity-50 block mb-1">Onyomi</span>
-                        <div className="font-mono text-base md:text-lg">{currentQuestion.kanji.onyomi.join(', ')}</div>
+                        <span className="opacity-60 block mb-1 font-bold text-sm uppercase">Onyomi</span>
+                        <div className="font-mono text-lg md:text-xl font-bold">{currentQuestion.kanji.onyomi.join(', ')}</div>
                     </div>
                     <div>
-                        <span className="opacity-50 block mb-1">Kunyomi</span>
-                        <div className="font-mono text-base md:text-lg">{currentQuestion.kanji.kunyomi.join(', ')}</div>
+                        <span className="opacity-60 block mb-1 font-bold text-sm uppercase">Kunyomi</span>
+                        <div className="font-mono text-lg md:text-xl font-bold">{currentQuestion.kanji.kunyomi.join(', ')}</div>
                     </div>
                  </div>
                  
-                 <div className="border-t border-current/30 pt-4">
-                    <span className="opacity-50 block mb-2 text-xs uppercase">Self-Rating</span>
-                    <div className="grid grid-cols-4 gap-2">
-                        <button onClick={() => handleSubmit(0)} className="p-2 border border-red-900/50 text-red-400 hover:bg-red-500 hover:text-black transition-all text-[10px] md:text-xs font-bold uppercase">Blackout</button>
-                        <button onClick={() => handleSubmit(3)} className="p-2 border border-current hover:bg-[var(--theme-color)] hover:text-black transition-all text-[10px] md:text-xs font-bold uppercase">Hard</button>
-                        <button onClick={() => handleSubmit(4)} className="p-2 border border-current hover:bg-[var(--theme-color)] hover:text-black transition-all text-[10px] md:text-xs font-bold uppercase">Good</button>
-                        <button onClick={() => handleSubmit(5)} className="p-2 border border-green-900/50 text-green-400 hover:bg-green-500 hover:text-black transition-all text-[10px] md:text-xs font-bold uppercase">Easy</button>
+                 <div className="border-t-2 border-current/30 pt-6">
+                    <span className="opacity-60 block mb-3 text-sm uppercase font-bold tracking-wider">Self-Rating</span>
+                    <div className="grid grid-cols-4 gap-3">
+                        <button onClick={() => handleSubmit(0)} className="p-3 border border-red-900/50 text-red-400 hover:bg-red-500 hover:text-black transition-all text-xs md:text-sm font-bold uppercase tracking-wide">Blackout</button>
+                        <button onClick={() => handleSubmit(3)} className="p-3 border border-current hover:bg-[var(--theme-color)] hover:text-black transition-all text-xs md:text-sm font-bold uppercase tracking-wide">Hard</button>
+                        <button onClick={() => handleSubmit(4)} className="p-3 border border-current hover:bg-[var(--theme-color)] hover:text-black transition-all text-xs md:text-sm font-bold uppercase tracking-wide">Good</button>
+                        <button onClick={() => handleSubmit(5)} className="p-3 border border-green-900/50 text-green-400 hover:bg-green-500 hover:text-black transition-all text-xs md:text-sm font-bold uppercase tracking-wide">Easy</button>
                     </div>
                  </div>
                </motion.div>
