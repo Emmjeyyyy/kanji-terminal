@@ -27,9 +27,9 @@ export const CRTContainer: React.FC<CRTContainerProps> = ({ children, settings }
   }[theme];
 
   return (
-    <div className="fixed inset-0 bg-[#050505] flex items-center justify-center">
+    <div className="fixed inset-0 bg-[#050505] flex items-center justify-center overflow-hidden">
       <div 
-        className={`relative w-[95vw] h-[95vh] md:w-[90vw] md:h-[90vh] rounded-lg md:rounded-xl border-2 ${themeConfig.border} overflow-hidden ${themeConfig.bg} ${themeConfig.text} selection:bg-[var(--theme-color)] selection:text-black shadow-[0_0_50px_rgba(0,0,0,0.8)]`}
+        className={`relative w-[98vw] h-[98vh] max-w-[1600px] rounded-lg md:rounded-xl border-2 ${themeConfig.border} overflow-hidden ${themeConfig.bg} ${themeConfig.text} selection:bg-[var(--theme-color)] selection:text-black shadow-[0_0_50px_rgba(0,0,0,0.8)]`}
         style={{ '--theme-color': themeConfig.hex } as React.CSSProperties}
       >
         {/* CRT Screen Effects */}
@@ -67,9 +67,9 @@ export const CRTContainer: React.FC<CRTContainerProps> = ({ children, settings }
           </div>
         )}
 
-        {/* Main Content Area */}
-        <div className={`relative z-10 h-full flex flex-col p-4 md:p-8 ${themeConfig.glow}`}>
-          <div className="w-full h-full flex flex-col max-w-[1600px] mx-auto">
+        {/* Main Content Area - Reduced padding for better fit */}
+        <div className={`relative z-10 h-full flex flex-col p-4 md:p-6 lg:p-8 ${themeConfig.glow}`}>
+          <div className="w-full h-full flex flex-col mx-auto">
               {children}
           </div>
         </div>
