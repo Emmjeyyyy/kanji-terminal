@@ -101,7 +101,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
             exit={{ opacity: 0, x: -20 }}
             className="w-full flex flex-col items-center h-full"
           >
-             {/* Prompt Title */}
+             {/* Only show prompt title if NOT showing answer to save space in result view, or keep it small */}
              {!showAnswer && (
                  <h2 className="text-sm md:text-base uppercase tracking-[0.3em] mb-2 md:mb-4 opacity-80 font-bold border-b border-current/30 pb-2 w-full text-center shrink-0">
                    {currentQuestion.type === 'reading' ? 'Select Correct Reading' : 
@@ -109,7 +109,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                  </h2>
              )}
              
-             {/* Content */}
+             {/* Multiple Choice State */}
              {!showAnswer ? (
                 <>
                     {/* Large Character Display */}
@@ -144,81 +144,73 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                >
                  {/* Feedback Banner - Compact */}
                  <div className={`w-full p-2 mb-2 border-2 flex items-center justify-between shrink-0 ${feedback === 'correct' ? 'border-green-500 bg-green-900/30 text-green-400' : 'border-red-500 bg-red-900/30 text-red-400'}`}>
-                    <div className="flex items-center gap-2 text-lg font-bold uppercase tracking-wider">
-                       {feedback === 'correct' ? <Check className="w-5 h-5" /> : <X className="w-5 h-5" />}
-                       {feedback === 'correct' ? 'CORRECT' : 'INCORRECT'}
+                    <div className="flex items-center gap-2 text-lg md:text-xl font-bold uppercase tracking-wider">
+                       {feedback === 'correct' ? <Check className="w-5 h-5 md:w-6 md:h-6" /> : <X className="w-5 h-5 md:w-6 md:h-6" />}
+                       {feedback}
                     </div>
                     {feedback === 'incorrect' && (
                         <div className="text-right leading-none">
                            <div className="text-[10px] uppercase opacity-70 font-bold">Answer</div>
-                           <div className="text-base font-bold font-mono text-white">{currentQuestion.correctAnswer}</div>
+                           <div className="text-base md:text-lg font-bold font-mono text-white">{currentQuestion.correctAnswer}</div>
                         </div>
                     )}
                  </div>
 
-                 {/* Info Card - Auto-fitting layout */}
+                 {/* Info Card - Compact Layout */}
                  <div className="flex-1 border-2 border-current p-3 md:p-4 bg-black/80 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden min-h-0">
                      
-                     <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0 pr-1">
+                     <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
                         {/* Header Row: Kanji + Meaning */}
                         <div className="flex items-end gap-4 border-b border-current/30 pb-2 mb-2">
-                             <div className="text-5xl md:text-6xl font-bold text-[var(--theme-color)] crt-text-glow leading-none">{currentQuestion.kanji.char}</div>
-                             <div className="pb-1 min-w-0 flex-1">
+                             <div className="text-5xl md:text-7xl font-bold text-[var(--theme-color)] crt-text-glow leading-none">{currentQuestion.kanji.char}</div>
+                             <div className="pb-1 min-w-0">
                                  <div className="text-lg md:text-2xl font-bold opacity-90 uppercase tracking-widest leading-tight truncate">{currentQuestion.kanji.meaning}</div>
                                  <div className="text-[10px] md:text-xs uppercase opacity-60 font-bold tracking-widest">JLPT {currentQuestion.kanji.level} • ID: {currentQuestion.kanji.id.toUpperCase()}</div>
                              </div>
                         </div>
 
-                        {/* Readings Grid - Compact */}
+                        {/* Readings Grid */}
                         <div className="grid grid-cols-2 gap-4 mb-3">
                             <div className="border-l-2 border-current/30 pl-3">
-                                <span className="block text-[10px] uppercase opacity-60 font-bold tracking-widest text-[var(--theme-color)]">Onyomi (Chinese)</span>
-                                <div className="text-base md:text-lg font-mono font-bold leading-tight break-words">{currentQuestion.kanji.onyomi.join(', ') || '-'}</div>
+                                <span className="block text-[10px] uppercase opacity-60 font-bold tracking-widest">Onyomi</span>
+                                <div className="text-lg md:text-xl font-mono font-bold leading-tight break-words">{currentQuestion.kanji.onyomi.join(', ') || '-'}</div>
                             </div>
                             <div className="border-l-2 border-current/30 pl-3">
-                                <span className="block text-[10px] uppercase opacity-60 font-bold tracking-widest text-[var(--theme-color)]">Kunyomi (Japanese)</span>
-                                <div className="text-base md:text-lg font-mono font-bold leading-tight break-words">{currentQuestion.kanji.kunyomi.join(', ') || '-'}</div>
+                                <span className="block text-[10px] uppercase opacity-60 font-bold tracking-widest">Kunyomi</span>
+                                <div className="text-lg md:text-xl font-mono font-bold leading-tight break-words">{currentQuestion.kanji.kunyomi.join(', ') || '-'}</div>
                             </div>
                         </div>
 
-                         {/* Mini Vocab List - Limit to 2 items to save vertical space */}
+                         {/* Mini Vocab List */}
                          {currentQuestion.kanji.examples.length > 0 && (
                              <div className="bg-white/5 p-2 border border-current/20">
                                  <span className="block text-[10px] uppercase opacity-50 font-bold tracking-widest mb-1">Examples</span>
-                                 <div className="space-y-1.5">
-                                     {currentQuestion.kanji.examples.slice(0, 2).map((ex, i) => (
-                                         <div key={i} className="flex justify-between items-baseline text-xs opacity-90 border-b border-current/10 pb-1 last:border-0 last:pb-0">
-                                             <div className="flex gap-2 items-baseline">
-                                                <span className="font-bold text-sm">{ex.word}</span>
-                                                <span className="font-mono opacity-70">[{ex.reading}]</span>
-                                             </div>
-                                             <span className="text-right truncate ml-2 font-bold opacity-80">{ex.meaning}</span>
+                                 <div className="space-y-1">
+                                     {currentQuestion.kanji.examples.slice(0, 3).map((ex, i) => (
+                                         <div key={i} className="flex justify-between text-xs opacity-80">
+                                             <span className="font-mono font-bold">{ex.word} ({ex.reading})</span>
+                                             <span className="text-right truncate ml-2">{ex.meaning}</span>
                                          </div>
                                      ))}
-                                     {currentQuestion.kanji.examples.length > 2 && (
-                                         <div className="text-[10px] opacity-40 text-center uppercase font-bold">
-                                             + {currentQuestion.kanji.examples.length - 2} more
-                                         </div>
-                                     )}
                                  </div>
                              </div>
                          )}
                      </div>
 
                      {/* Action Bar - Sticky at bottom of card */}
-                     <div className="mt-2 pt-2 border-t-2 border-current/30 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shrink-0">
-                        <div className="flex gap-2 items-center justify-center md:justify-start">
-                            <span className="text-[10px] uppercase opacity-50 font-bold mr-1 hidden md:inline whitespace-nowrap">Override Rating:</span>
-                            <button onClick={() => saveResult(3)} className="px-3 py-2 border border-current hover:bg-[var(--theme-color)] hover:text-black text-[10px] md:text-xs font-bold uppercase transition-colors min-w-[60px]">Hard</button>
-                            <button onClick={() => saveResult(4)} className="px-3 py-2 border border-current hover:bg-[var(--theme-color)] hover:text-black text-[10px] md:text-xs font-bold uppercase transition-colors min-w-[60px]">Good</button>
-                            <button onClick={() => saveResult(5)} className="px-3 py-2 border border-current hover:bg-[var(--theme-color)] hover:text-black text-[10px] md:text-xs font-bold uppercase transition-colors min-w-[60px]">Easy</button>
+                     <div className="mt-2 pt-2 border-t-2 border-current/30 flex flex-col md:flex-row items-center justify-between gap-2 shrink-0">
+                        <div className="flex gap-2 w-full md:w-auto justify-center">
+                            <span className="text-[10px] uppercase opacity-50 font-bold self-center mr-1 hidden md:inline">Rate:</span>
+                            <button onClick={() => saveResult(3)} className="flex-1 md:flex-none px-3 py-1.5 border border-current hover:bg-[var(--theme-color)] hover:text-black text-[10px] md:text-xs font-bold uppercase transition-colors">Hard</button>
+                            <button onClick={() => saveResult(4)} className="flex-1 md:flex-none px-3 py-1.5 border border-current hover:bg-[var(--theme-color)] hover:text-black text-[10px] md:text-xs font-bold uppercase transition-colors">Good</button>
+                            <button onClick={() => saveResult(5)} className="flex-1 md:flex-none px-3 py-1.5 border border-current hover:bg-[var(--theme-color)] hover:text-black text-[10px] md:text-xs font-bold uppercase transition-colors">Easy</button>
                         </div>
                         
                         <button 
                             onClick={handleNext}
-                            className="px-6 py-2 bg-[var(--theme-color)] text-black font-bold text-sm md:text-base uppercase tracking-widest hover:bg-white hover:scale-105 transition-all shadow-[0_0_15px_var(--theme-color)] flex items-center justify-center gap-2 whitespace-nowrap"
+                            className="w-full md:w-auto px-4 py-2 bg-[var(--theme-color)] text-black font-bold text-sm md:text-base uppercase tracking-widest hover:bg-white hover:scale-105 transition-all shadow-[0_0_10px_var(--theme-color)] flex items-center justify-center gap-2"
                         >
-                            {isLast ? 'Finish Session' : 'Next Data Block'} <ArrowRight className="w-4 h-4" />
+                            {isLast ? 'Finish' : 'Next'} <ArrowRight className="w-4 h-4" />
                         </button>
                      </div>
                  </div>
