@@ -22,22 +22,36 @@ const DEFAULT_STATE: AppState = {
 type View = 'dashboard' | 'learn' | 'quiz_setup' | 'quiz_active' | 'boss_mode' | 'settings';
 
 export default function App() {
-  const [state, setState] = useState<AppState>(DEFAULT_STATE);
-  const [currentView, setCurrentView] = useState<View>('dashboard');
-  const [activeQuizQuestions, setActiveQuizQuestions] = useState<QuizQuestion[]>([]);
-  const [isBossMode, setIsBossMode] = useState(false);
-
-  // Load from local storage on mount
-  useEffect(() => {
+  // Initialize state from local storage to prevent settings reset on refresh
+  const [state, setState] = useState<AppState>(() => {
     const saved = localStorage.getItem('crt_kanji_lab_v1');
     if (saved) {
       try {
-        setState(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        // Merge with default state to ensure structure integrity
+        return {
+          ...DEFAULT_STATE,
+          ...parsed,
+          settings: {
+            ...DEFAULT_STATE.settings,
+            ...(parsed.settings || {})
+          },
+          progress: {
+            ...DEFAULT_STATE.progress,
+            ...(parsed.progress || {})
+          }
+        };
       } catch (e) {
         console.error("Save corrupted", e);
+        return DEFAULT_STATE;
       }
     }
-  }, []);
+    return DEFAULT_STATE;
+  });
+
+  const [currentView, setCurrentView] = useState<View>('dashboard');
+  const [activeQuizQuestions, setActiveQuizQuestions] = useState<QuizQuestion[]>([]);
+  const [isBossMode, setIsBossMode] = useState(false);
 
   // Save on change
   useEffect(() => {
