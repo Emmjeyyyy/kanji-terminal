@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { QuizQuestion, AppSettings, AppState, UserProgress } from '../types';
 import { calculateReview } from '../utils/srs';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, Timer, ArrowRight, MousePointer2 } from 'lucide-react';
+import { Check, X, Timer, ArrowRight, MousePointer2, RefreshCw } from 'lucide-react';
 
 interface QuizModeProps {
   questions: QuizQuestion[];
@@ -14,15 +14,30 @@ interface QuizModeProps {
 }
 
 export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, settings, appState, onExit, isTimed }) => {
+  // Queue state for dynamic mastery loop
+  const [queue, setQueue] = useState<QuizQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  
   const [showAnswer, setShowAnswer] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const [sessionResults, setSessionResults] = useState<Record<string, UserProgress>>({});
+  const [processedIds, setProcessedIds] = useState<Set<string>>(new Set()); // Track first attempts for SRS integrity
   const [timeLeft, setTimeLeft] = useState(isTimed ? 300 : 0);
 
-  const currentQuestion = questions[currentIndex];
-  const isLast = currentIndex === questions.length - 1;
+  // Initialize queue from props
+  useEffect(() => {
+    setQueue(questions);
+    setCurrentIndex(0);
+    setProcessedIds(new Set());
+    setSessionResults({});
+    setShowAnswer(false);
+    setFeedback(null);
+  }, [questions]);
+
+  const currentQuestion = queue[currentIndex];
+  const isLast = currentIndex === queue.length - 1;
+  const isRetry = currentQuestion ? processedIds.has(currentQuestion.kanji.id) : false;
 
   useEffect(() => {
     if (isTimed && timeLeft > 0) {
@@ -42,24 +57,48 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
 
     setSelectedOption(option);
     const isCorrect = option === currentQuestion.correctAnswer;
+    const kanjiId = currentQuestion.kanji.id;
     
     setFeedback(isCorrect ? 'correct' : 'incorrect');
     setShowAnswer(true);
 
-    // Default Quality: 5 (Easy) for correct, 2 (Hard) for incorrect
-    const defaultQuality = isCorrect ? 5 : 2;
-    saveResult(defaultQuality);
+    // SRS Logic: Only grade the first attempt
+    if (!processedIds.has(kanjiId)) {
+        // Default Quality: 5 (Easy) for correct, 2 (Hard) for incorrect
+        const defaultQuality = isCorrect ? 5 : 2;
+        
+        const currentProg = appState.progress[kanjiId] || sessionResults[kanjiId];
+        const newProg = calculateReview(kanjiId, currentProg, defaultQuality);
+        
+        setSessionResults(prev => ({
+            ...prev,
+            [kanjiId]: newProg
+        }));
+
+        setProcessedIds(prev => new Set(prev).add(kanjiId));
+    }
+
+    // Mastery Logic: If incorrect, add to end of queue
+    if (!isCorrect) {
+        setQueue(prev => [...prev, currentQuestion]);
+    }
   };
 
-  const saveResult = (quality: number) => {
-     const kId = currentQuestion.kanji.id;
-     const currentProg = appState.progress[kId] || sessionResults[kId];
-     const newProg = calculateReview(kId, currentProg, quality);
+  const manualGrade = (quality: number) => {
+     if (!currentQuestion) return;
+     const kanjiId = currentQuestion.kanji.id;
      
-     setSessionResults(prev => ({
-       ...prev,
-       [kId]: newProg
-     }));
+     // Only allow manual grading if it's the first attempt (SRS integrity)
+     if (!processedIds.has(kanjiId)) {
+        const currentProg = appState.progress[kanjiId] || sessionResults[kanjiId];
+        const newProg = calculateReview(kanjiId, currentProg, quality);
+        
+        setSessionResults(prev => ({
+            ...prev,
+            [kanjiId]: newProg
+        }));
+        setProcessedIds(prev => new Set(prev).add(kanjiId));
+     }
   };
 
   const handleNext = () => {
@@ -73,7 +112,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
     }
   };
 
-  if (!currentQuestion) return <div>No questions loaded.</div>;
+  if (!currentQuestion) return <div>Initializing Data Stream...</div>;
 
   return (
     <div className="flex flex-col h-full max-w-5xl mx-auto w-full overflow-hidden p-2 md:p-4">
@@ -81,7 +120,14 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
       <div className="flex justify-between items-center border-b-2 border-current pb-2 mb-2 shrink-0">
         <div className="flex items-center gap-3 md:gap-6">
           <button onClick={onExit} className="hover:bg-white/20 px-2 py-1 rounded transition-colors text-xs md:text-sm uppercase tracking-widest border border-current font-bold">[ ESC ] Abort</button>
-          <span className="font-mono text-lg md:text-xl font-bold">Q: {currentIndex + 1}/{questions.length}</span>
+          <div className="flex items-center gap-2">
+              <span className="font-mono text-lg md:text-xl font-bold">Q: {currentIndex + 1}/{queue.length}</span>
+              {isRetry && (
+                  <span className="bg-amber-500/20 text-amber-500 border border-amber-500 px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest flex items-center gap-1">
+                      <RefreshCw size={10} /> Retry
+                  </span>
+              )}
+          </div>
         </div>
         {isTimed && (
           <div className="flex items-center gap-3 font-mono text-lg md:text-xl font-bold">
@@ -146,7 +192,10 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                  <div className={`w-full p-3 md:p-4 mb-3 border-2 flex items-center justify-between shrink-0 ${feedback === 'correct' ? 'border-green-500 bg-green-900/30 text-green-400' : 'border-red-500 bg-red-900/30 text-red-400'}`}>
                     <div className="flex items-center gap-3 text-xl md:text-3xl font-bold uppercase tracking-wider">
                        {feedback === 'correct' ? <Check className="w-6 h-6 md:w-8 md:h-8" /> : <X className="w-6 h-6 md:w-8 md:h-8" />}
-                       {feedback === 'correct' ? 'CORRECT' : 'INCORRECT'}
+                       <div>
+                           <div>{feedback === 'correct' ? 'CORRECT' : 'INCORRECT'}</div>
+                           {feedback === 'incorrect' && <div className="text-[10px] md:text-xs font-mono font-bold flex items-center gap-1 mt-0.5"><RefreshCw size={10}/> REQUEUED FOR MASTERY</div>}
+                       </div>
                     </div>
                     {feedback === 'incorrect' && (
                         <div className="text-right leading-none">
@@ -207,11 +256,20 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
 
                      {/* Action Bar - Sticky at bottom of card - Larger buttons */}
                      <div className="mt-4 pt-4 border-t-2 border-current/30 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 shrink-0">
-                        <div className="flex gap-3 items-center justify-center md:justify-start">
-                            <span className="text-xs md:text-sm uppercase opacity-50 font-bold mr-2 hidden md:inline whitespace-nowrap">Override Rating:</span>
-                            <button onClick={() => saveResult(3)} className="px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Hard</button>
-                            <button onClick={() => saveResult(4)} className="px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Good</button>
-                            <button onClick={() => saveResult(5)} className="px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Easy</button>
+                        <div className="flex gap-3 items-center justify-center md:justify-start min-h-[44px]">
+                            {!isRetry && (
+                                <>
+                                    <span className="text-xs md:text-sm uppercase opacity-50 font-bold mr-2 hidden md:inline whitespace-nowrap">Override Rating:</span>
+                                    <button onClick={() => manualGrade(3)} className="px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Hard</button>
+                                    <button onClick={() => manualGrade(4)} className="px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Good</button>
+                                    <button onClick={() => manualGrade(5)} className="px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Easy</button>
+                                </>
+                            )}
+                            {isRetry && (
+                                <span className="text-xs md:text-sm uppercase opacity-50 font-bold italic">
+                                    Rating recorded on first attempt.
+                                </span>
+                            )}
                         </div>
                         
                         <button 
