@@ -122,7 +122,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
           <button onClick={onExit} className="hover:bg-white/20 px-2 py-1 rounded transition-colors text-xs md:text-sm uppercase tracking-widest border border-current font-bold">[ ESC ] Abort</button>
           <div className="flex items-center gap-2">
               <span className="font-mono text-lg md:text-xl font-bold">Q: {currentIndex + 1}/{queue.length}</span>
-              {isRetry && (
+              {isRetry && feedback !== 'correct' && (
                   <span className="bg-amber-500/20 text-amber-500 border border-amber-500 px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest flex items-center gap-1">
                       <RefreshCw size={10} /> Retry
                   </span>
