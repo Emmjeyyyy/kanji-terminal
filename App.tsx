@@ -225,7 +225,7 @@ export default function App() {
                          <div className="absolute top-0 right-0 p-2 md:p-3 opacity-20 group-hover:opacity-10 transition-opacity">
                             <Trophy size={32} className="md:w-12 md:h-12" />
                         </div>
-                        <h2 className="text-lg md:text-2xl font-bold mb-1 tracking-wide">BOSS RUNS</h2>
+                        <h2 className="text-lg md:text-2xl font-bold mb-1 tracking-wide">START SIMULATION</h2>
                         <p className="text-[10px] md:text-sm opacity-80 font-mono group-hover:font-bold">
                            Simulate JLPT exams (N5/N4).
                         </p>
