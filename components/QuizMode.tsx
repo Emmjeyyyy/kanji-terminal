@@ -76,16 +76,16 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
   if (!currentQuestion) return <div>No questions loaded.</div>;
 
   return (
-    <div className="flex flex-col h-full max-w-5xl mx-auto w-full overflow-y-auto custom-scrollbar p-2 md:p-4">
+    <div className="flex flex-col h-full max-w-5xl mx-auto w-full overflow-hidden p-2 md:p-4">
       {/* Header */}
-      <div className="flex justify-between items-center border-b-2 border-current pb-2 md:pb-4 mb-2 md:mb-6 shrink-0">
+      <div className="flex justify-between items-center border-b-2 border-current pb-2 mb-2 shrink-0">
         <div className="flex items-center gap-3 md:gap-6">
-          <button onClick={onExit} className="hover:bg-white/20 px-2 md:px-3 py-1 md:py-1.5 rounded transition-colors text-xs md:text-sm uppercase tracking-widest border border-current font-bold">[ ESC ] Abort</button>
-          <span className="font-mono text-lg md:text-2xl font-bold">Q: {currentIndex + 1}/{questions.length}</span>
+          <button onClick={onExit} className="hover:bg-white/20 px-2 py-1 rounded transition-colors text-xs md:text-sm uppercase tracking-widest border border-current font-bold">[ ESC ] Abort</button>
+          <span className="font-mono text-lg md:text-xl font-bold">Q: {currentIndex + 1}/{questions.length}</span>
         </div>
         {isTimed && (
-          <div className="flex items-center gap-3 font-mono text-lg md:text-2xl font-bold">
-             <Timer className="w-4 h-4 md:w-6 md:h-6 animate-pulse" />
+          <div className="flex items-center gap-3 font-mono text-lg md:text-xl font-bold">
+             <Timer className="w-4 h-4 md:w-5 md:h-5 animate-pulse" />
              {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
           </div>
         )}
@@ -101,90 +101,124 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
             exit={{ opacity: 0, x: -20 }}
             className="w-full flex flex-col items-center h-full"
           >
-             <h2 className="text-sm md:text-lg uppercase tracking-[0.3em] mb-2 md:mb-6 opacity-80 font-bold border-b border-current/30 pb-2 w-full text-center shrink-0">
-               {currentQuestion.type === 'reading' ? 'Select Correct Reading' : 
-                currentQuestion.type === 'meaning' ? 'Select Correct Meaning' : 'Select Matching Kanji'}
-             </h2>
+             {/* Prompt Title */}
+             {!showAnswer && (
+                 <h2 className="text-sm md:text-base uppercase tracking-[0.3em] mb-2 md:mb-4 opacity-80 font-bold border-b border-current/30 pb-2 w-full text-center shrink-0">
+                   {currentQuestion.type === 'reading' ? 'Select Correct Reading' : 
+                    currentQuestion.type === 'meaning' ? 'Select Correct Meaning' : 'Select Matching Kanji'}
+                 </h2>
+             )}
              
-             {/* Large Character Display */}
-             <div className="flex-shrink-0 mb-4 md:mb-8 text-center flex-1 flex flex-col justify-center">
-               <div className="text-[5rem] md:text-[8rem] lg:text-[10rem] leading-none font-bold crt-text-glow transition-all duration-300">
-                 {currentQuestion.type === 'reverse' ? <span className="text-3xl md:text-6xl max-w-2xl block leading-tight">{currentQuestion.kanji.meaning}</span> : currentQuestion.kanji.char}
-               </div>
-               {currentQuestion.type === 'reverse' && <div className="text-sm md:text-lg opacity-60 mt-1 md:mt-2 font-mono uppercase tracking-widest">Identify Character</div>}
-             </div>
-             
-             {/* Multiple Choice Grid */}
+             {/* Content */}
              {!showAnswer ? (
-                <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 max-w-4xl shrink-0 pb-2">
-                   {currentQuestion.options.map((option, idx) => (
-                     <button
-                       key={idx}
-                       onClick={() => handleOptionClick(option)}
-                       className="group relative border-2 border-current p-3 md:p-5 text-left transition-all duration-200 hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_20px_var(--theme-color)] hover:scale-[1.01] active:scale-[0.99] flex items-center gap-3 md:gap-4"
-                     >
-                        <div className="w-6 h-6 md:w-8 md:h-8 border-2 border-current flex items-center justify-center font-bold text-sm md:text-lg group-hover:border-black shrink-0">
-                          {idx + 1}
+                <>
+                    {/* Large Character Display */}
+                    <div className="flex-shrink-0 mb-4 md:mb-8 text-center flex-1 flex flex-col justify-center min-h-0">
+                        <div className="text-[5rem] md:text-[8rem] lg:text-[10rem] leading-none font-bold crt-text-glow transition-all duration-300">
+                            {currentQuestion.type === 'reverse' ? <span className="text-3xl md:text-6xl max-w-2xl block leading-tight">{currentQuestion.kanji.meaning}</span> : currentQuestion.kanji.char}
                         </div>
-                        <span className="text-lg md:text-2xl font-bold font-mono leading-tight break-words">{option}</span>
-                        <MousePointer2 className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity w-5 h-5" />
-                     </button>
-                   ))}
-                </div>
+                        {currentQuestion.type === 'reverse' && <div className="text-sm md:text-lg opacity-60 mt-1 md:mt-2 font-mono uppercase tracking-widest">Identify Character</div>}
+                    </div>
+
+                    <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 max-w-4xl shrink-0 pb-2">
+                    {currentQuestion.options.map((option, idx) => (
+                        <button
+                        key={idx}
+                        onClick={() => handleOptionClick(option)}
+                        className="group relative border-2 border-current p-3 md:p-4 text-left transition-all duration-200 hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_20px_var(--theme-color)] hover:scale-[1.01] active:scale-[0.99] flex items-center gap-3 md:gap-4"
+                        >
+                            <div className="w-6 h-6 md:w-8 md:h-8 border-2 border-current flex items-center justify-center font-bold text-sm md:text-base group-hover:border-black shrink-0">
+                                {idx + 1}
+                            </div>
+                            <span className="text-lg md:text-xl font-bold font-mono leading-tight break-words">{option}</span>
+                            <MousePointer2 className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity w-5 h-5" />
+                        </button>
+                    ))}
+                    </div>
+                </>
              ) : (
                <motion.div 
                  initial={{ opacity: 0, y: 10 }}
                  animate={{ opacity: 1, y: 0 }}
                  className="w-full max-w-3xl mx-auto flex flex-col h-full overflow-hidden"
                >
-                 {/* Feedback Banner */}
-                 <div className={`w-full p-2 md:p-4 mb-4 border-2 flex items-center justify-between shrink-0 ${feedback === 'correct' ? 'border-green-500 bg-green-900/30 text-green-400' : 'border-red-500 bg-red-900/30 text-red-400'}`}>
-                    <div className="flex items-center gap-2 md:gap-3 text-xl md:text-2xl font-bold uppercase tracking-wider">
-                       {feedback === 'correct' ? <Check className="w-6 h-6 md:w-8 md:h-8" /> : <X className="w-6 h-6 md:w-8 md:h-8" />}
-                       {feedback}
+                 {/* Feedback Banner - Compact */}
+                 <div className={`w-full p-2 mb-2 border-2 flex items-center justify-between shrink-0 ${feedback === 'correct' ? 'border-green-500 bg-green-900/30 text-green-400' : 'border-red-500 bg-red-900/30 text-red-400'}`}>
+                    <div className="flex items-center gap-2 text-lg font-bold uppercase tracking-wider">
+                       {feedback === 'correct' ? <Check className="w-5 h-5" /> : <X className="w-5 h-5" />}
+                       {feedback === 'correct' ? 'CORRECT' : 'INCORRECT'}
                     </div>
                     {feedback === 'incorrect' && (
-                        <div className="text-right">
-                           <div className="text-[10px] md:text-xs uppercase opacity-70 font-bold">Correct Answer</div>
-                           <div className="text-lg md:text-xl font-bold font-mono text-white">{currentQuestion.correctAnswer}</div>
+                        <div className="text-right leading-none">
+                           <div className="text-[10px] uppercase opacity-70 font-bold">Answer</div>
+                           <div className="text-base font-bold font-mono text-white">{currentQuestion.correctAnswer}</div>
                         </div>
                     )}
                  </div>
 
-                 {/* Info Card */}
-                 <div className="flex-1 border-2 border-current p-4 md:p-6 bg-black/80 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)] flex flex-col justify-between overflow-y-auto custom-scrollbar">
-                     <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-                        <div className="text-center md:text-left shrink-0">
-                            <div className="text-6xl md:text-8xl font-bold text-[var(--theme-color)] crt-text-glow leading-none mb-1 md:mb-2">{currentQuestion.kanji.char}</div>
-                            <div className="text-lg md:text-xl font-bold opacity-80 uppercase tracking-widest">{currentQuestion.kanji.meaning}</div>
+                 {/* Info Card - Auto-fitting layout */}
+                 <div className="flex-1 border-2 border-current p-3 md:p-4 bg-black/80 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden min-h-0">
+                     
+                     <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0 pr-1">
+                        {/* Header Row: Kanji + Meaning */}
+                        <div className="flex items-end gap-4 border-b border-current/30 pb-2 mb-2">
+                             <div className="text-5xl md:text-6xl font-bold text-[var(--theme-color)] crt-text-glow leading-none">{currentQuestion.kanji.char}</div>
+                             <div className="pb-1 min-w-0 flex-1">
+                                 <div className="text-lg md:text-2xl font-bold opacity-90 uppercase tracking-widest leading-tight truncate">{currentQuestion.kanji.meaning}</div>
+                                 <div className="text-[10px] md:text-xs uppercase opacity-60 font-bold tracking-widest">JLPT {currentQuestion.kanji.level} • ID: {currentQuestion.kanji.id.toUpperCase()}</div>
+                             </div>
                         </div>
-                        
-                        <div className="flex-1 grid grid-cols-1 gap-4 content-center">
-                            <div className="border-l-4 border-current/30 pl-3 md:pl-4">
-                                <span className="block text-xs uppercase opacity-60 font-bold tracking-widest mb-1">Onyomi (Chinese)</span>
-                                <div className="text-xl md:text-2xl font-mono font-bold">{currentQuestion.kanji.onyomi.join(', ') || '-'}</div>
+
+                        {/* Readings Grid - Compact */}
+                        <div className="grid grid-cols-2 gap-4 mb-3">
+                            <div className="border-l-2 border-current/30 pl-3">
+                                <span className="block text-[10px] uppercase opacity-60 font-bold tracking-widest text-[var(--theme-color)]">Onyomi (Chinese)</span>
+                                <div className="text-base md:text-lg font-mono font-bold leading-tight break-words">{currentQuestion.kanji.onyomi.join(', ') || '-'}</div>
                             </div>
-                            <div className="border-l-4 border-current/30 pl-3 md:pl-4">
-                                <span className="block text-xs uppercase opacity-60 font-bold tracking-widest mb-1">Kunyomi (Japanese)</span>
-                                <div className="text-xl md:text-2xl font-mono font-bold">{currentQuestion.kanji.kunyomi.join(', ') || '-'}</div>
+                            <div className="border-l-2 border-current/30 pl-3">
+                                <span className="block text-[10px] uppercase opacity-60 font-bold tracking-widest text-[var(--theme-color)]">Kunyomi (Japanese)</span>
+                                <div className="text-base md:text-lg font-mono font-bold leading-tight break-words">{currentQuestion.kanji.kunyomi.join(', ') || '-'}</div>
                             </div>
                         </div>
+
+                         {/* Mini Vocab List - Limit to 2 items to save vertical space */}
+                         {currentQuestion.kanji.examples.length > 0 && (
+                             <div className="bg-white/5 p-2 border border-current/20">
+                                 <span className="block text-[10px] uppercase opacity-50 font-bold tracking-widest mb-1">Examples</span>
+                                 <div className="space-y-1.5">
+                                     {currentQuestion.kanji.examples.slice(0, 2).map((ex, i) => (
+                                         <div key={i} className="flex justify-between items-baseline text-xs opacity-90 border-b border-current/10 pb-1 last:border-0 last:pb-0">
+                                             <div className="flex gap-2 items-baseline">
+                                                <span className="font-bold text-sm">{ex.word}</span>
+                                                <span className="font-mono opacity-70">[{ex.reading}]</span>
+                                             </div>
+                                             <span className="text-right truncate ml-2 font-bold opacity-80">{ex.meaning}</span>
+                                         </div>
+                                     ))}
+                                     {currentQuestion.kanji.examples.length > 2 && (
+                                         <div className="text-[10px] opacity-40 text-center uppercase font-bold">
+                                             + {currentQuestion.kanji.examples.length - 2} more
+                                         </div>
+                                     )}
+                                 </div>
+                             </div>
+                         )}
                      </div>
 
-                     {/* Action Bar */}
-                     <div className="mt-4 md:mt-8 pt-4 border-t-2 border-current/30 flex flex-col md:flex-row items-center justify-between gap-3 shrink-0">
-                        <div className="flex gap-2 w-full md:w-auto">
-                            <span className="text-xs uppercase opacity-50 font-bold self-center mr-2 hidden md:inline">Override Rating:</span>
-                            <button onClick={() => saveResult(3)} className="flex-1 md:flex-none px-3 py-2 border border-current hover:bg-[var(--theme-color)] hover:text-black text-xs font-bold uppercase">Hard</button>
-                            <button onClick={() => saveResult(4)} className="flex-1 md:flex-none px-3 py-2 border border-current hover:bg-[var(--theme-color)] hover:text-black text-xs font-bold uppercase">Good</button>
-                            <button onClick={() => saveResult(5)} className="flex-1 md:flex-none px-3 py-2 border border-current hover:bg-[var(--theme-color)] hover:text-black text-xs font-bold uppercase">Easy</button>
+                     {/* Action Bar - Sticky at bottom of card */}
+                     <div className="mt-2 pt-2 border-t-2 border-current/30 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shrink-0">
+                        <div className="flex gap-2 items-center justify-center md:justify-start">
+                            <span className="text-[10px] uppercase opacity-50 font-bold mr-1 hidden md:inline whitespace-nowrap">Override Rating:</span>
+                            <button onClick={() => saveResult(3)} className="px-3 py-2 border border-current hover:bg-[var(--theme-color)] hover:text-black text-[10px] md:text-xs font-bold uppercase transition-colors min-w-[60px]">Hard</button>
+                            <button onClick={() => saveResult(4)} className="px-3 py-2 border border-current hover:bg-[var(--theme-color)] hover:text-black text-[10px] md:text-xs font-bold uppercase transition-colors min-w-[60px]">Good</button>
+                            <button onClick={() => saveResult(5)} className="px-3 py-2 border border-current hover:bg-[var(--theme-color)] hover:text-black text-[10px] md:text-xs font-bold uppercase transition-colors min-w-[60px]">Easy</button>
                         </div>
                         
                         <button 
                             onClick={handleNext}
-                            className="w-full md:w-auto px-6 py-2 md:py-3 bg-[var(--theme-color)] text-black font-bold text-base md:text-lg uppercase tracking-widest hover:bg-white hover:scale-105 transition-all shadow-[0_0_15px_var(--theme-color)] flex items-center justify-center gap-2"
+                            className="px-6 py-2 bg-[var(--theme-color)] text-black font-bold text-sm md:text-base uppercase tracking-widest hover:bg-white hover:scale-105 transition-all shadow-[0_0_15px_var(--theme-color)] flex items-center justify-center gap-2 whitespace-nowrap"
                         >
-                            {isLast ? 'Finish Session' : 'Next Data Block'} <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
+                            {isLast ? 'Finish Session' : 'Next Data Block'} <ArrowRight className="w-4 h-4" />
                         </button>
                      </div>
                  </div>
