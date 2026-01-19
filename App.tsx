@@ -567,7 +567,7 @@ export default function App() {
                             <span className="text-base md:text-lg group-hover:text-shadow-[0_0_3px_currentColor] font-bold">Monitor Theme</span>
                             <button 
                                 onClick={toggleTheme} 
-                                className="border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
+                                className="select-none border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
                                 style={{ borderColor: themeColor }}
                             >
                                 {state.settings.theme}
@@ -577,7 +577,7 @@ export default function App() {
                             <span className="text-base md:text-lg group-hover:text-shadow-[0_0_3px_currentColor] font-bold">CRT Emulation</span>
                             <button 
                                 onClick={() => toggleSetting('crtEnabled')} 
-                                className="border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
+                                className="select-none border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
                                 style={{ borderColor: themeColor }}
                             >
                                 {state.settings.crtEnabled ? 'ON' : 'OFF'}
@@ -592,7 +592,7 @@ export default function App() {
                                     <span className="text-base md:text-lg opacity-80 group-hover:opacity-100 group-hover:text-shadow-[0_0_3px_currentColor]">Scanlines</span>
                                     <button 
                                         onClick={() => toggleSetting('scanlines')} 
-                                        className="border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
+                                        className="select-none border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
                                         style={{ borderColor: themeColor }}
                                     >
                                         {state.settings.scanlines ? 'ON' : 'OFF'}
@@ -605,7 +605,7 @@ export default function App() {
                                     <span className="text-base md:text-lg opacity-80 group-hover:opacity-100 group-hover:text-shadow-[0_0_3px_currentColor]">Phosphor Flicker</span>
                                     <button 
                                         onClick={() => toggleSetting('flicker')} 
-                                        className="border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
+                                        className="select-none border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
                                         style={{ borderColor: themeColor }}
                                     >
                                         {state.settings.flicker ? 'ON' : 'OFF'}
@@ -618,7 +618,7 @@ export default function App() {
                                     <span className="text-base md:text-lg opacity-80 group-hover:opacity-100 group-hover:text-shadow-[0_0_3px_currentColor]">Phosphor Glow</span>
                                     <button 
                                         onClick={() => toggleSetting('glow')} 
-                                        className="border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
+                                        className="select-none border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
                                         style={{ borderColor: themeColor }}
                                     >
                                         {state.settings.glow ? 'ON' : 'OFF'}
@@ -632,7 +632,7 @@ export default function App() {
                          >
                              <button 
                                 onClick={() => { localStorage.removeItem('crt_kanji_lab_v1'); window.location.reload(); }}
-                                className="text-red-500 border-2 border-red-500 px-6 py-2 hover:bg-red-900/40 hover:text-red-300 hover:shadow-[0_0_20px_red] text-xs md:text-sm font-bold uppercase transition-all tracking-widest"
+                                className="select-none text-red-500 border-2 border-red-500 px-6 py-2 hover:bg-red-900/40 hover:text-red-300 hover:shadow-[0_0_20px_red] text-xs md:text-sm font-bold uppercase transition-all tracking-widest"
                              >
                                 <Power className="inline w-4 h-4 mr-2" /> Factory Reset
                              </button>
