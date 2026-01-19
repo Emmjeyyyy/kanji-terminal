@@ -553,7 +553,7 @@ export default function App() {
         {currentView === 'settings' && (
             <div className="flex-1 overflow-y-auto flex items-center justify-center">
                 <div 
-                    className="max-w-xl mx-auto w-full border-2 p-6 md:p-10 bg-black/60 shadow-[0_0_30px_rgba(0,0,0,0.6)] backdrop-blur-sm"
+                    className="max-w-xl mx-auto w-full border-2 rounded-lg p-6 md:p-10 bg-black/60 shadow-[0_0_30px_rgba(0,0,0,0.6)] backdrop-blur-sm"
                     style={{ borderColor: themeColor }}
                 >
                     <h2 
