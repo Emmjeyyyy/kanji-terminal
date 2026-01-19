@@ -434,7 +434,7 @@ export default function App() {
     <CRTContainer settings={state.settings}>
       {/* Top Navigation - Fixed Height */}
       <nav 
-        className="flex flex-col md:flex-row justify-between items-center mb-2 md:mb-4 border-b-2 pb-2 md:pb-4 select-none shrink-0 gap-2 md:gap-0"
+        className="flex flex-col md:flex-row justify-between w-full md:w-auto items-center border-b-2 pb-2 md:pb-4 select-none shrink-0 gap-2 md:gap-0"
         style={{ borderColor: themeColor }}
       >
         <div className="flex items-center gap-4 md:gap-8 w-full md:w-auto justify-between md:justify-start">

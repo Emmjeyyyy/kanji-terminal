@@ -101,15 +101,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
 
   return (
     <div className="space-y-2 md:space-y-3 pb-1 overflow-y-auto h-full pr-1 custom-scrollbar flex flex-col">
-      <header className="border-b py-[8px] mb-1 shrink-0 flex justify-between items-end" style={{ borderColor: themeColor }}>
-        <div className="-translate-y-[10px]">
+      <header className="border-b pt-[9px] mb-1 shrink-0 flex justify-between items-end" style={{ borderColor: themeColor }}>
+        <div className="-translate-y-[9px]">
             <h1 className="text-xl md:text-3xl font-bold uppercase tracking-tighter flex items-center gap-2">
             <Activity className="w-5 h-5 md:w-6 md:h-6" /> 
             Operator Stats
             </h1>
             <p className="text-[10px] md:text-xs opacity-90 font-mono mt-0.5">System Status: ONLINE // Monitoring Learning Progress</p>
         </div>
-        <div className="flex -translate-y-[44px] gap-[50px] md:gap-[40px] mb-1.5 opacity-100 mr-[45px]">
+        <div className="flex -translate-y-[44px] gap-[50px] md:gap-[40px] opacity-100 mr-[45px]">
           <PrintStreamX filled={true} className="w-3 h-3 md:w-4 md:h-4" />
           <PrintStreamX filled={true} className="w-3 h-3 md:w-4 md:h-4" />
           <PrintStreamX filled={false} className="w-3 h-3 md:w-4 md:h-4" />
