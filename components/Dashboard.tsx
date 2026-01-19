@@ -120,7 +120,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
             {weakKanji.length > 0 && (
                 <button 
                   onClick={onResolve}
-                  className="flex items-center gap-1.5 px-3 py-1 text-[10px] md:text-xs font-bold uppercase border border-current hover:bg-[var(--theme-color)] hover:text-black transition-all shadow-[0_0_5px_rgba(0,0,0,0.5)] hover:shadow-[0_0_10px_var(--theme-color)] active:scale-95"
+                  className="flex items-center gap-1.5 px-3 py-1 text-[13px] md:text-xs font-bold uppercase border border-current hover:bg-[var(--theme-color)] hover:text-black transition-all shadow-[0_0_5px_rgba(0,0,0,0.5)] hover:shadow-[0_0_10px_var(--theme-color)] active:scale-95"
                 >
                     <Zap size={12} fill="currentColor" /> RESOLVE
                 </button>
