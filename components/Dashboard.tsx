@@ -100,8 +100,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
   }
 
   return (
-    <div className="space-y-2 md:space-y-3 pb-1 overflow-y-auto h-full pr-1 custom-scrollbar flex flex-col">
-      <header className="border-b pb-2 mb-1 shrink-0 flex justify-between items-center" style={{ borderColor: themeColor }}>
+    <div className="space-y-2 md:space-y-3 pb-1 overflow-y-auto h-full custom-scrollbar flex flex-col">
+      <header className="border-b pb-2 mb-1 shrink-0 flex justify-between items-center pr" style={{ borderColor: themeColor }}>
         <div>
             <h1 className="text-xl md:text-3xl font-bold uppercase tracking-tighter flex items-center gap-2">
             <Activity className="w-5 h-5 md:w-6 md:h-6" /> 
