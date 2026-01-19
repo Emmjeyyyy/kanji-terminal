@@ -31,6 +31,10 @@ export interface UserProgress {
 export interface AppState {
   progress: Record<string, UserProgress>;
   settings: AppSettings;
+  dailySessionTracker: {
+    date: string; // "YYYY-MM-DD" or DateString
+    count: number;
+  };
 }
 
 export interface AppSettings {

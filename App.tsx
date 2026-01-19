@@ -6,7 +6,7 @@ import { QuizMode } from './components/QuizMode';
 import { AppState, UserProgress, QuizQuestion, KanjiData, QuizType } from './types';
 import { kanjiList } from './data/kanji';
 import { getDueItems } from './utils/srs';
-import { Home, Book, Brain, Trophy, Settings, Power } from 'lucide-react';
+import { Home, Book, Brain, Trophy, Settings, Power, Lock } from 'lucide-react';
 
 const DEFAULT_STATE: AppState = {
   progress: {},
@@ -16,6 +16,10 @@ const DEFAULT_STATE: AppState = {
     flicker: true,
     audio: false,
     theme: 'green'
+  },
+  dailySessionTracker: {
+      date: new Date().toDateString(),
+      count: 0
   }
 };
 
@@ -28,6 +32,14 @@ export default function App() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        
+        // Handle migration for old state that might lack dailySessionTracker
+        const tracker = parsed.dailySessionTracker || {
+            date: new Date().toDateString(),
+            // If we had lastDailyCompleted, assume 1 session done, else 0
+            count: parsed.lastDailyCompleted && new Date(parsed.lastDailyCompleted).toDateString() === new Date().toDateString() ? 1 : 0
+        };
+
         // Merge with default state to ensure structure integrity
         return {
           ...DEFAULT_STATE,
@@ -39,7 +51,8 @@ export default function App() {
           progress: {
             ...DEFAULT_STATE.progress,
             ...(parsed.progress || {})
-          }
+          },
+          dailySessionTracker: tracker
         };
       } catch (e) {
         console.error("Save corrupted", e);
@@ -52,6 +65,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [activeQuizQuestions, setActiveQuizQuestions] = useState<QuizQuestion[]>([]);
   const [isBossMode, setIsBossMode] = useState(false);
+  const [isDailySession, setIsDailySession] = useState(false);
 
   // Save on change
   useEffect(() => {
@@ -59,41 +73,95 @@ export default function App() {
   }, [state]);
 
   const updateProgress = (results: Record<string, UserProgress>) => {
-    setState(prev => ({
-      ...prev,
+    const newState = {
+      ...state,
       progress: {
-        ...prev.progress,
+        ...state.progress,
         ...results
       }
-    }));
+    };
+
+    // If this was a daily session, increment the counter for today
+    if (isDailySession) {
+        const today = new Date().toDateString();
+        let newCount = 1;
+        
+        // If tracker is already today's date, increment
+        if (state.dailySessionTracker.date === today) {
+            newCount = state.dailySessionTracker.count + 1;
+        } 
+        // If tracker is old date (or future/mismatch), reset to 1 (done just now)
+        
+        newState.dailySessionTracker = {
+            date: today,
+            count: newCount
+        };
+    }
+
+    setState(newState);
+    setIsDailySession(false);
     setCurrentView('dashboard');
   };
 
+  const shuffle = <T,>(array: T[]): T[] => {
+    const newArr = [...array];
+    for (let i = newArr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+    }
+    return newArr;
+  };
+
   const startDailySession = () => {
-    // Priority: Due items -> New items (if due count < 10)
-    const due = getDueItems(state.progress);
-    let sessionKanjiIds = due.map(p => p.kanjiId);
+    const today = new Date().toDateString();
     
-    // Fill up to 10 with new items if needed
+    // Check if we have sessions remaining
+    let currentCount = 0;
+    if (state.dailySessionTracker.date === today) {
+        currentCount = state.dailySessionTracker.count;
+    }
+
+    if (currentCount >= 5) return;
+
+    let sessionKanjiIds: string[] = [];
+    
+    // 1. Get Due Items and Shuffle them (Random Selection from Due Pool)
+    const due = getDueItems(state.progress);
+    const shuffledDue = shuffle(due).map(p => p.kanjiId);
+    sessionKanjiIds = [...shuffledDue];
+    
+    // 2. Fill up to 10 with NEW items if needed
     if (sessionKanjiIds.length < 10) {
         const learnedIds = Object.keys(state.progress);
         const newItems = kanjiList
             .filter(k => !learnedIds.includes(k.id))
-            .slice(0, 10 - sessionKanjiIds.length)
             .map(k => k.id);
-        sessionKanjiIds = [...sessionKanjiIds, ...newItems];
+        const shuffledNew = shuffle(newItems);
+        sessionKanjiIds = [...sessionKanjiIds, ...shuffledNew];
     }
 
-    if (sessionKanjiIds.length === 0) {
-        // Fallback if everything learned and nothing due: Review random 10
-        sessionKanjiIds = kanjiList
-            .sort(() => 0.5 - Math.random())
-            .slice(0, 10)
+    // 3. Fill up to 10 with REVIEW items (random learned items) if still needed
+    if (sessionKanjiIds.length < 10) {
+        const learnedIds = Object.keys(state.progress);
+        const candidates = learnedIds.filter(id => !sessionKanjiIds.includes(id));
+        const shuffledCandidates = shuffle(candidates);
+        sessionKanjiIds = [...sessionKanjiIds, ...shuffledCandidates];
+    }
+    
+    // 4. Fallback: If absolutely nothing else, pick random from full list
+    if (sessionKanjiIds.length < 10) {
+        const candidates = kanjiList
+            .filter(k => !sessionKanjiIds.includes(k.id))
             .map(k => k.id);
+        sessionKanjiIds = [...sessionKanjiIds, ...shuffle(candidates)];
     }
 
-    generateQuestions(sessionKanjiIds);
+    // Ensure we have exactly 10 unique items
+    const finalIds = [...new Set(sessionKanjiIds)].slice(0, 10);
+
+    generateQuestions(finalIds);
     setIsBossMode(false);
+    setIsDailySession(true);
     setCurrentView('quiz_active');
   };
 
@@ -105,16 +173,8 @@ export default function App() {
       
       generateQuestions(targetKanji.map(k => k.id));
       setIsBossMode(true);
+      setIsDailySession(false);
       setCurrentView('quiz_active');
-  };
-
-  const shuffle = <T,>(array: T[]): T[] => {
-    const newArr = [...array];
-    for (let i = newArr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
-    }
-    return newArr;
   };
 
   const generateQuestions = (ids: string[]) => {
@@ -170,6 +230,17 @@ export default function App() {
       }));
   };
 
+  const getSessionsDoneToday = () => {
+      const today = new Date().toDateString();
+      if (state.dailySessionTracker.date === today) {
+          return state.dailySessionTracker.count;
+      }
+      return 0;
+  };
+
+  const sessionsDone = getSessionsDoneToday();
+  const isDailyLimitReached = sessionsDone >= 5;
+
   return (
     <CRTContainer settings={state.settings}>
       {/* Top Navigation - Fixed Height */}
@@ -207,15 +278,19 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 shrink-0 pb-1">
                     <button 
                         onClick={startDailySession}
-                        className="group relative border-2 border-current p-3 md:p-4 text-left transition-all duration-300 overflow-hidden hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_30px_var(--theme-color)] active:scale-[0.99]"
+                        disabled={isDailyLimitReached}
+                        className={`group relative border-2 border-current p-3 md:p-4 text-left transition-all duration-300 overflow-hidden ${isDailyLimitReached ? 'opacity-50 cursor-not-allowed border-current/30' : 'hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_30px_var(--theme-color)] active:scale-[0.99]'}`}
                     >
-                        <div className="absolute top-0 right-0 p-2 md:p-3 opacity-20 group-hover:opacity-10 transition-opacity">
-                            <Brain size={32} className="md:w-12 md:h-12" />
+                        <div className={`absolute top-0 right-0 p-2 md:p-3 transition-opacity ${isDailyLimitReached ? 'opacity-10' : 'opacity-20 group-hover:opacity-10'}`}>
+                            {isDailyLimitReached ? <Lock size={32} className="md:w-12 md:h-12" /> : <Brain size={32} className="md:w-12 md:h-12" />}
                         </div>
-                        <h2 className="text-lg md:text-2xl font-bold mb-1 tracking-wide">DAILY SESSION</h2>
+                        <h2 className="text-lg md:text-2xl font-bold mb-1 tracking-wide">
+                            {isDailyLimitReached ? 'DAILY LIMIT REACHED' : `DAILY SESSION (${sessionsDone}/5)`}
+                        </h2>
                         <p className="text-[10px] md:text-sm opacity-80 font-mono group-hover:font-bold">
-                           {getDueItems(state.progress).length} items due for review.
+                           {isDailyLimitReached ? 'Come back tomorrow for new sessions.' : '10 random questions per session.'}
                         </p>
+                        {isDailyLimitReached && <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-[var(--theme-color)] font-bold text-xl md:text-2xl tracking-[0.2em] border border-current -rotate-3 uppercase shadow-[0_0_20px_black] backdrop-blur-sm">System Locked</div>}
                     </button>
                     
                     <button 
