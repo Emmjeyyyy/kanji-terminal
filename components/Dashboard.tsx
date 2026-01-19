@@ -135,7 +135,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
           ) : (
             <div className="space-y-2 overflow-y-auto custom-scrollbar flex-1">
               {weakKanji.map(k => (
-                <div key={k.id} className="flex items-center justify-between p-2 border border-current/60 rounded hover:bg-white/5 transition-colors">
+                <div key={k.id} className="flex items-center justify-between p-2 border border-current rounded hover:bg-white/5 transition-colors">
                   <span className="text-lg md:text-xl font-bold">{k.char}</span>
                   <div className="text-right">
                     <div className="text-[10px] md:text-xs opacity-90 font-bold">{k.meaning}</div>
