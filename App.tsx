@@ -476,7 +476,7 @@ export default function App() {
             CRT: {state.settings.crtEnabled ? 'ON' : 'OFF'}
             </button>
             <button onClick={toggleSettingsView} className={`hover:opacity-100 transition-opacity ${currentView === 'settings' ? 'opacity-100 text-[var(--theme-color)] drop-shadow-[0_0_5px_var(--theme-color)]' : 'opacity-60'}`}>
-                <Settings size={20} />
+                <Settings size={30} />
             </button>
         </div>
       </nav>
