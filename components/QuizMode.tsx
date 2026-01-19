@@ -138,7 +138,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
       {/* Header */}
       <div className="flex justify-between items-center border-b-2 border-current pb-2 mb-2 shrink-0">
         <div className="flex items-center gap-3 md:gap-6">
-          <button onClick={onExit} className="hover:bg-white/20 px-2 py-1 rounded transition-colors text-xs md:text-sm uppercase tracking-widest border border-current font-bold">[ ESC ] Abort</button>
+          <button onClick={onExit} className="select-none hover:bg-white/20 px-2 py-1 rounded transition-colors text-xs md:text-sm uppercase tracking-widest border border-current font-bold">[ ESC ] Abort</button>
           <div className="flex items-center gap-2">
               <span className="font-mono text-lg md:text-xl font-bold">Q: {currentIndex + 1}/{queue.length}</span>
               {isRetry && feedback !== 'correct' && (
@@ -179,7 +179,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                 <>
                     {/* Large Character Display */}
                     <div className="flex-shrink-0 mb-4 md:mb-8 text-center flex-1 flex flex-col justify-center min-h-0">
-                        <div className="text-[5rem] md:text-[8rem] lg:text-[10rem] leading-none font-bold crt-text-glow transition-all duration-300">
+                        <div className="text-[5rem] md:text-[8rem] lg:text-[10rem] leading-none font-bold crt-text-glow2 transition-all duration-300">
                             {currentQuestion.type === 'reverse' ? <span className="text-3xl md:text-6xl max-w-2xl block leading-tight">{currentQuestion.kanji.meaning}</span> : currentQuestion.kanji.char}
                         </div>
                         {currentQuestion.type === 'reverse' && <div className="text-sm md:text-lg opacity-60 mt-1 md:mt-2 font-mono uppercase tracking-widest">Identify Character</div>}
@@ -190,7 +190,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                         <button
                         key={idx}
                         onClick={() => handleOptionClick(option)}
-                        className="group relative border-2 border-current p-3 md:p-4 text-left transition-all duration-200 hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_20px_var(--theme-color)] hover:scale-[1.01] active:scale-[0.99] flex items-center gap-3 md:gap-4"
+                        className="select-none group relative border-2 border-current p-3 md:p-4 text-left transition-all duration-200 hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_20px_var(--theme-color)] hover:scale-[1.01] active:scale-[0.99] flex items-center gap-3 md:gap-4"
                         >
                             <div className="w-6 h-6 md:w-8 md:h-8 border-2 border-current flex items-center justify-center font-bold text-sm md:text-base group-hover:border-black shrink-0">
                                 {idx + 1}
@@ -229,8 +229,8 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                      
                      <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0 pr-1">
                         {/* Header Row: Kanji + Meaning */}
-                        <div className="flex items-end gap-6 border-b border-current/30 pb-4 mb-4">
-                             <div className="text-6xl md:text-8xl font-bold text-[var(--theme-color)] crt-text-glow leading-none">{currentQuestion.kanji.char}</div>
+                        <div className="flex items-end gap-6 border-b border-current/30 pb-4 pt-2 mb-4">
+                             <div className="text-6xl md:text-8xl font-bold text-[var(--theme-color)] crt-text-glow leading-none p-1">{currentQuestion.kanji.char}</div>
                              <div className="pb-1 min-w-0 flex-1">
                                  <div className="text-2xl md:text-4xl font-bold opacity-90 uppercase tracking-widest leading-tight truncate mb-1">{currentQuestion.kanji.meaning}</div>
                                  <div className="text-xs md:text-sm uppercase opacity-60 font-bold tracking-widest">JLPT {currentQuestion.kanji.level} • ID: {currentQuestion.kanji.id.toUpperCase()}</div>
@@ -279,9 +279,9 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                             {!isRetry && (
                                 <>
                                     <span className="text-xs md:text-sm uppercase opacity-50 font-bold mr-2 hidden md:inline whitespace-nowrap">Override Rating:</span>
-                                    <button onClick={() => manualGrade(3)} className="px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Hard</button>
-                                    <button onClick={() => manualGrade(4)} className="px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Good</button>
-                                    <button onClick={() => manualGrade(5)} className="px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Easy</button>
+                                    <button onClick={() => manualGrade(3)} className="select-none px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Hard</button>
+                                    <button onClick={() => manualGrade(4)} className="select-none px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Good</button>
+                                    <button onClick={() => manualGrade(5)} className="select-none px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Easy</button>
                                 </>
                             )}
                             {isRetry && (
@@ -293,7 +293,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                         
                         <button 
                             onClick={handleNext}
-                            className="px-8 py-3 bg-[var(--theme-color)] text-black font-bold text-base md:text-lg uppercase tracking-widest hover:bg-white hover:scale-105 transition-all shadow-[0_0_20px_var(--theme-color)] flex items-center justify-center gap-3 whitespace-nowrap"
+                            className="select-none px-8 py-3 bg-[var(--theme-color)] text-black font-bold text-base md:text-lg uppercase tracking-widest hover:bg-white hover:scale-105 transition-all shadow-[0_0_20px_var(--theme-color)] flex items-center justify-center gap-3 whitespace-nowrap"
                         >
                             {isLast ? 'Finish Session' : 'Next Data Block'} <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
                         </button>
