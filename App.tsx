@@ -393,9 +393,12 @@ export default function App() {
       </main>
       
       {/* Footer Status Line - Fixed Height */}
-      <footer className="mt-2 pt-2 border-t-2 border-current/30 flex justify-between text-[10px] md:text-xs opacity-60 font-mono uppercase shrink-0 font-bold tracking-widest">
+      <footer className="mt-2 pt-2 border-t-2 border-current/30 flex justify-between items-center text-[10px] md:text-xs opacity-60 font-mono uppercase shrink-0 font-bold tracking-widest">
         <span>Mem: {Object.keys(state.progress).length} Blocks</span>
-        <span>Ver 1.0.4 // OFFLINE MODE</span>
+        <div className="flex items-center gap-2">
+            <span>Ver 1.0.4 // BOOT COMPLETE</span>
+            <div className="w-2.5 h-2.5 border-2 border-current animate-spin" />
+        </div>
       </footer>
     </CRTContainer>
   );
