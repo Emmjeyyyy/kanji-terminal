@@ -17,7 +17,7 @@ const StatCard = ({ title, value, icon: Icon, color }: any) => (
     className="border border-current p-2 md:p-3 rounded bg-opacity-10 bg-white/5 flex items-center justify-between hover:bg-white/10 transition-colors"
   >
     <div>
-      <h3 className="text-[10px] md:text-xs opacity-90 uppercase tracking-widest font-bold">{title}</h3>
+      <h3 className="text-[17px] md:text-[17px] opacity-90 uppercase tracking-widest font-bold">{title}</h3>
       <p className="text-xl md:text-2xl font-bold mt-1 font-mono">{value}</p>
     </div>
     <Icon className={`w-5 h-5 md:w-6 md:h-6 opacity-90 ${color}`} />
@@ -127,7 +127,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
             )}
           </div>
           {weakKanji.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center opacity-75 italic text-xs md:text-sm">
+            <div className="flex-1 flex items-center justify-center opacity-75 italic text-xs md:text-[20px]">
               No weak items detected.
             </div>
           ) : (
