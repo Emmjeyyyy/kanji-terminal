@@ -6,7 +6,7 @@ import { QuizMode } from './components/QuizMode';
 import { AppState, UserProgress, QuizQuestion, KanjiData, QuizType } from './types';
 import { kanjiList } from './data/kanji';
 import { getDueItems } from './utils/srs';
-import { Home, Book, Brain, Settings, Power, Lock } from 'lucide-react';
+import { Home, Book, Settings, Power, Lock } from 'lucide-react';
 
 // Custom Grid Sphere Globe Icon Component
 const GridGlobeIcon = ({ size = 32, className, style }: { size?: number | string, className?: string, style?: React.CSSProperties }) => (
@@ -57,6 +57,67 @@ const GridGlobeIcon = ({ size = 32, className, style }: { size?: number | string
       <ellipse cx="64" cy="64" rx="44" ry="30"/>
       <ellipse cx="64" cy="64" rx="44" ry="18"/>
       <ellipse cx="64" cy="64" rx="44" ry="6"/>
+    </g>
+  </svg>
+);
+
+// Custom Grid Hourglass Icon Component
+const GridHourglassIcon = ({ size = 32, className, style }: { size?: number | string, className?: string, style?: React.CSSProperties }) => (
+<svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 128 128" 
+    role="img" 
+    aria-label="Grid hourglass icon"
+    height={size}
+    className={className}
+    style={style}
+  >
+    <defs>
+      <filter id="hg-glow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="2.8" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+
+      <radialGradient id="hg-halo" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stopColor="currentColor" stopOpacity="0.18"/>
+        <stop offset="55%" stopColor="currentColor" stopOpacity="0.08"/>
+        <stop offset="100%" stopColor="currentColor" stopOpacity="0"/>
+      </radialGradient>
+
+      <clipPath id="hg-clip">
+          <path d="M34 22 H94 C94 22 98 22 98 26 C98 52 70 64 64 64 C58 64 30 52 30 26 C30 22 34 22 34 22 Z M34 106 H94 C94 106 98 106 98 102 C98 76 70 64 64 64 C58 64 30 76 30 102 C30 106 34 106 34 106 Z" />
+      </clipPath>
+    </defs>
+
+
+    {/* Outer Hourglass */}
+    <path 
+        d="M34 22 H94 C94 22 98 22 98 26 C98 52 70 64 64 64 C58 64 30 52 30 26 C30 22 34 22 34 22 Z M34 106 H94 C94 106 98 106 98 102 C98 76 70 64 64 64 C58 64 30 76 30 102 C30 106 34 106 34 106 Z" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="4" 
+        filter="url(#hg-glow)" 
+        strokeLinejoin="round"
+        strokeLinecap="round"
+    />
+
+    {/* Grid Lines */}
+    <g clipPath="url(#hg-clip)" stroke="currentColor" strokeWidth="2" fill="none" filter="url(#hg-glow)" opacity="0.9">
+        {/* Verticals */}
+        <line x1="48" y1="10" x2="48" y2="118" />
+        <line x1="64" y1="10" x2="64" y2="118" />
+        <line x1="80" y1="10" x2="80" y2="118" />
+
+        {/* Horizontals Top */}
+        <line x1="10" y1="34" x2="118" y2="34" />
+        <line x1="10" y1="50" x2="118" y2="50" />
+        
+        {/* Horizontals Bottom */}
+        <line x1="10" y1="78" x2="118" y2="78" />
+        <line x1="10" y1="94" x2="118" y2="94" />
     </g>
   </svg>
 );
@@ -412,8 +473,8 @@ export default function App() {
                         disabled={isDailyLimitReached}
                         className={`group relative border-2 border-current p-3 md:p-4 text-left transition-all duration-300 overflow-hidden ${isDailyLimitReached ? 'opacity-50 cursor-not-allowed border-current/30' : 'hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_30px_var(--theme-color)] active:scale-[0.99]'}`}
                     >
-                        <div className={`absolute top-2 right-0 p-2 md:p-3 transition-opacity ${isDailyLimitReached ? 'opacity-10' : 'opacity-20 group-hover:opacity-10'}`}>
-                            {isDailyLimitReached ? <Lock size={32} className="md:w-12 md:h-12" /> : <Brain size={34} className="md:w-12 md:h-12" />}
+                        <div className={`absolute -top-2 right-0 p-2 md:p-3 transition-opacity ${isDailyLimitReached ? 'opacity-10' : 'opacity-20 group-hover:opacity-10'}`}>
+                            {isDailyLimitReached ? <Lock size={32} className="md:w-12 md:h-12" /> : <GridHourglassIcon size={48} className="md:w-20 md:h-20" />}
                         </div>
                         <h2 className="text-lg md:text-2xl font-bold mb-1 tracking-wide">
                             {isDailyLimitReached ? 'DAILY LIMIT REACHED' : `DAILY SESSION (${sessionsDone}/5)`}
