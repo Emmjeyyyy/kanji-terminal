@@ -42,13 +42,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
   const accuracy = totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
 
   // Chart Data preparation
-  const last7Days = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (6 - i));
-    return d.toLocaleDateString('en-US', { weekday: 'short' });
-  });
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  const chartData = last7Days.map(day => ({
+  const chartData = daysOfWeek.map(day => ({
     name: day,
     reviews: Math.floor(Math.random() * (learnedCount / 2)) // Mock visual
   }));
