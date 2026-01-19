@@ -55,8 +55,27 @@
         100% { transform: translateY(100vh); }
       }
 
+      /* CRT Intro Fade-In */
+      @keyframes crtIntro {
+        0% { opacity: 0; }
+        10% { opacity: 0.4; }
+        20% { opacity: 0.1; }
+        30% { opacity: 0.7; }
+        40% { opacity: 0.2; }
+        50% { opacity: 0.9; }
+        60% { opacity: 0.5; }
+        70% { opacity: 1; }
+        80% { opacity: 0.9; }
+        100% { opacity: 1; }
+      }
+
       .crt-flicker {
         animation: flicker 0.15s infinite;
+      }
+
+      .crt-intro-anim {
+        animation: crtIntro 0.6s ease-out forwards;
+        opacity: 0;
       }
       
       .crt-text-glow {

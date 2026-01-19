@@ -185,6 +185,16 @@ export default function App() {
   const [isBossMode, setIsBossMode] = useState(false);
   const [isDailySession, setIsDailySession] = useState(false);
   const [isWeakSession, setIsWeakSession] = useState(false);
+  
+  // Track initial load for intro animation
+  const [introPlayed, setIntroPlayed] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+        setIntroPlayed(true);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Save on change
   useEffect(() => {
@@ -483,7 +493,8 @@ export default function App() {
                     <button 
                         onClick={startDailySession}
                         disabled={isDailyLimitReached}
-                        className={`group relative border-2 border-current p-3 md:p-4 text-left transition-all duration-300 overflow-hidden ${isDailyLimitReached ? 'opacity-50 cursor-not-allowed border-current/30' : 'hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_30px_var(--theme-color)] active:scale-[0.99]'}`}
+                        className={`group relative border-2 border-current p-3 md:p-4 text-left transition-all duration-300 overflow-hidden ${isDailyLimitReached ? 'opacity-50 cursor-not-allowed border-current/30' : 'hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_30px_var(--theme-color)] active:scale-[0.99]'} ${!introPlayed ? 'crt-intro-anim' : ''}`}
+                        style={!introPlayed ? { animationDelay: '0.2s' } : {}}
                     >
                         <div className={`absolute -top-2 right-0 p-2 md:p-3 transition-opacity ${isDailyLimitReached ? 'opacity-10' : 'opacity-20 group-hover:opacity-10'}`}>
                             {isDailyLimitReached ? <Lock size={32} className="md:w-12 md:h-12" /> : <GridHourglassIcon size={48} className="md:w-20 md:h-20" />}
@@ -499,7 +510,8 @@ export default function App() {
                     
                     <button 
                         onClick={() => setCurrentView('quiz_setup')}
-                        className="group relative border-2 border-current p-3 md:p-4 text-left transition-all duration-300 overflow-hidden hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_30px_var(--theme-color)] active:scale-[0.99]"
+                        className={`group relative border-2 border-current p-3 md:p-4 text-left transition-all duration-300 overflow-hidden hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_30px_var(--theme-color)] active:scale-[0.99] ${!introPlayed ? 'crt-intro-anim' : ''}`}
+                        style={!introPlayed ? { animationDelay: '0.4s' } : {}}
                     >
                          <div className="absolute -top-2 right-0 p-2 md:p-3 opacity-20 group-hover:opacity-10 transition-opacity">
                             <GridGlobeIcon size={48} className="md:w-20 md:h-20" />
