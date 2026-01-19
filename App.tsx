@@ -469,7 +469,7 @@ export default function App() {
                 w-[90px] px-0 py-[5px] rounded
                 transition-all duration-200 font-bold tracking-wider
                 ${state.settings.crtEnabled
-                ? 'bg-[var(--theme-color)] text-black shadow-[0_0_15px_var(--theme-color)]'
+                ? 'bg-[var(--theme-color)] text-black shadow-[0_0_2px_var(--theme-color)]'
                 : 'opacity-60 hover:opacity-100'
                 }`}
             >
