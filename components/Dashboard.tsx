@@ -31,7 +31,7 @@ const PrintStreamX = ({ filled = true, className = "" }: { filled?: boolean, cla
   
   return (
     <svg 
-      viewBox="0 0 24 24" 
+      viewBox="0 0 100 100" 
       className={className} 
       style={{ overflow: 'visible' }}
     >
@@ -39,7 +39,7 @@ const PrintStreamX = ({ filled = true, className = "" }: { filled?: boolean, cla
         d={d} 
         fill={filled ? "currentColor" : "none"} 
         stroke={filled ? "none" : "currentColor"}
-        strokeWidth={filled ? "0" : "1.5"}
+        strokeWidth={filled ? "0" : "5"}
       />
     </svg>
   );
@@ -101,21 +101,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
 
   return (
     <div className="space-y-2 md:space-y-3 pb-1 overflow-y-auto h-full pr-1 custom-scrollbar flex flex-col">
-      <header className="border-b pt-[9px] mb-1 shrink-0 flex justify-between items-end" style={{ borderColor: themeColor }}>
-        <div className="-translate-y-[9px]">
+      <header className="border-b pb-2 mb-1 shrink-0 flex justify-between items-center" style={{ borderColor: themeColor }}>
+        <div>
             <h1 className="text-xl md:text-3xl font-bold uppercase tracking-tighter flex items-center gap-2">
             <Activity className="w-5 h-5 md:w-6 md:h-6" /> 
             Operator Stats
             </h1>
             <p className="text-[10px] md:text-xs opacity-90 font-mono mt-0.5">System Status: ONLINE // Monitoring Learning Progress</p>
         </div>
-        <div className="flex -translate-y-[44px] gap-[50px] md:gap-[40px] opacity-100 mr-[45px]">
-          <PrintStreamX filled={true} className="w-3 h-3 md:w-4 md:h-4" />
-          <PrintStreamX filled={true} className="w-3 h-3 md:w-4 md:h-4" />
-          <PrintStreamX filled={false} className="w-3 h-3 md:w-4 md:h-4" />
-          <PrintStreamX filled={false} className="w-3 h-3 md:w-4 md:h-4" />
+        <div className="flex gap-[10px] md:gap-[10px] opacity-100 items-center">
+          <PrintStreamX filled={false} className="w-10 h-10 md:w-12 md:h-12" />
+          <PrintStreamX filled={false} className="w-10 h-10 md:w-12 md:h-12" />
+          <PrintStreamX filled={true} className="w-10 h-10 md:w-12 md:h-12" />
+          <PrintStreamX filled={true} className="w-10 h-10 md:w-12 md:h-12" />
         </div>
-
       </header>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 shrink-0">
