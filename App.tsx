@@ -6,7 +6,60 @@ import { QuizMode } from './components/QuizMode';
 import { AppState, UserProgress, QuizQuestion, KanjiData, QuizType } from './types';
 import { kanjiList } from './data/kanji';
 import { getDueItems } from './utils/srs';
-import { Home, Book, Brain, Trophy, Settings, Power, Lock } from 'lucide-react';
+import { Home, Book, Brain, Settings, Power, Lock } from 'lucide-react';
+
+// Custom Grid Sphere Globe Icon Component
+const GridGlobeIcon = ({ size = 32, className, style }: { size?: number | string, className?: string, style?: React.CSSProperties }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 128 128" 
+    role="img" 
+    aria-label="Grid globe icon"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+  >
+    <defs>
+      <filter id="globe-glow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="2.8" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+
+      <radialGradient id="globe-halo" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stopColor="currentColor" stopOpacity="0.18"/>
+        <stop offset="55%" stopColor="currentColor" stopOpacity="0.08"/>
+        <stop offset="100%" stopColor="currentColor" stopOpacity="0"/>
+      </radialGradient>
+
+      <clipPath id="globe-clipSphere">
+        <circle cx="64" cy="64" r="44"/>
+      </clipPath>
+    </defs>
+
+    {/* Halo */}
+    <circle cx="64" cy="64" r="54" fill="url(#globe-halo)"/>
+
+    {/* Outer sphere */}
+    <circle cx="64" cy="64" r="44" fill="none" stroke="currentColor" strokeWidth="4" filter="url(#globe-glow)"/>
+
+    {/* Grid lines clipped inside sphere */}
+    <g clipPath="url(#globe-clipSphere)" stroke="currentColor" strokeWidth="2" fill="none" filter="url(#globe-glow)" strokeLinecap="round" strokeLinejoin="round" opacity="0.95">
+      {/* Vertical meridians (ellipses) */}
+      <ellipse cx="64" cy="64" rx="30" ry="44"/>
+      <ellipse cx="64" cy="64" rx="18" ry="44"/>
+      <ellipse cx="64" cy="64" rx="6"  ry="44"/>
+
+      {/* Horizontal parallels */}
+      <ellipse cx="64" cy="64" rx="44" ry="30"/>
+      <ellipse cx="64" cy="64" rx="44" ry="18"/>
+      <ellipse cx="64" cy="64" rx="44" ry="6"/>
+    </g>
+  </svg>
+);
 
 const DEFAULT_STATE: AppState = {
   progress: {},
@@ -359,8 +412,8 @@ export default function App() {
                         disabled={isDailyLimitReached}
                         className={`group relative border-2 border-current p-3 md:p-4 text-left transition-all duration-300 overflow-hidden ${isDailyLimitReached ? 'opacity-50 cursor-not-allowed border-current/30' : 'hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_30px_var(--theme-color)] active:scale-[0.99]'}`}
                     >
-                        <div className={`absolute top-0 right-0 p-2 md:p-3 transition-opacity ${isDailyLimitReached ? 'opacity-10' : 'opacity-20 group-hover:opacity-10'}`}>
-                            {isDailyLimitReached ? <Lock size={32} className="md:w-12 md:h-12" /> : <Brain size={32} className="md:w-12 md:h-12" />}
+                        <div className={`absolute top-2 right-0 p-2 md:p-3 transition-opacity ${isDailyLimitReached ? 'opacity-10' : 'opacity-20 group-hover:opacity-10'}`}>
+                            {isDailyLimitReached ? <Lock size={32} className="md:w-12 md:h-12" /> : <Brain size={34} className="md:w-12 md:h-12" />}
                         </div>
                         <h2 className="text-lg md:text-2xl font-bold mb-1 tracking-wide">
                             {isDailyLimitReached ? 'DAILY LIMIT REACHED' : `DAILY SESSION (${sessionsDone}/5)`}
@@ -375,8 +428,8 @@ export default function App() {
                         onClick={() => setCurrentView('quiz_setup')}
                         className="group relative border-2 border-current p-3 md:p-4 text-left transition-all duration-300 overflow-hidden hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_30px_var(--theme-color)] active:scale-[0.99]"
                     >
-                         <div className="absolute top-0 right-0 p-2 md:p-3 opacity-20 group-hover:opacity-10 transition-opacity">
-                            <Trophy size={32} className="md:w-12 md:h-12" />
+                         <div className="absolute -top-2 right-0 p-2 md:p-3 opacity-20 group-hover:opacity-10 transition-opacity">
+                            <GridGlobeIcon size={48} className="md:w-20 md:h-20" />
                         </div>
                         <h2 className="text-lg md:text-2xl font-bold mb-1 tracking-wide">START SIMULATION</h2>
                         <p className="text-[10px] md:text-sm opacity-80 font-mono group-hover:font-bold">
