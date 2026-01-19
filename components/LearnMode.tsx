@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { KanjiData } from '../types';
+import { KanjiData, UserProgress } from '../types';
 import { kanjiList } from '../data/kanji';
 import { Search, Filter, Database } from 'lucide-react';
 
-export const LearnMode: React.FC = () => {
+interface LearnModeProps {
+  progress: Record<string, UserProgress>;
+}
+
+export const LearnMode: React.FC<LearnModeProps> = ({ progress }) => {
   const [filterLevel, setFilterLevel] = useState<'ALL' | 'N5' | 'N4'>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedKanji, setSelectedKanji] = useState<KanjiData | null>(null);
@@ -108,12 +112,49 @@ export const LearnMode: React.FC = () => {
                         </div>
                         <h2 className="text-6xl md:text-9xl font-bold leading-none crt-text-glow text-[var(--theme-color)]">{selectedKanji.char}</h2>
                     </div>
-                    {/* Adjusted text size and added margin right as requested */}
-                    <div className="text-right relative z-10 max-w-[50%] md:max-w-xl pr-4 md:pr-8">
-                        <div className="text-2xl md:text-5xl font-bold mb-1 md:mb-2 leading-tight">{selectedKanji.meaning}</div>
-                        <div className="h-1.5 w-full bg-[var(--theme-color)]/20 mt-2 md:mt-3 shadow-[0_0_5px_var(--theme-color)]">
-                            <div className="h-full bg-[var(--theme-color)] w-1/3 animate-pulse shadow-[0_0_10px_var(--theme-color)]"></div>
-                        </div>
+                    
+                    <div className="text-right relative z-10 max-w-[50%] md:max-w-xl pr-4 md:pr-8 flex flex-col justify-end">
+                        <div className="text-2xl md:text-5xl font-bold mb-1 leading-tight">{selectedKanji.meaning}</div>
+                        
+                        {/* Mastery Progress Bar */}
+                        {(() => {
+                            const count = progress[selectedKanji.id]?.correctCount ?? 0;
+                            const percent = Math.min((count / 100) * 100, 100);
+                            const isMastered = count >= 100;
+                            
+                            return (
+                                <div className="mt-3 md:mt-4 w-full">
+                                    <div className="flex justify-end items-center gap-2 mb-1 opacity-90">
+                                        {isMastered && (
+                                            <span className="text-[8px] md:text-[10px] font-mono uppercase font-bold tracking-widest text-[var(--theme-color)] animate-pulse shadow-[0_0_5px_var(--theme-color)] px-1">
+                                                MASTERY ACHIEVED
+                                            </span>
+                                        )}
+                                        {!isMastered && (
+                                            <span className="text-[8px] md:text-[10px] font-mono uppercase opacity-60 font-bold tracking-widest">
+                                                SYNCING...
+                                            </span>
+                                        )}
+                                        <span className="text-sm md:text-base font-mono font-bold leading-none">
+                                            {count}<span className="text-[10px] md:text-xs opacity-60">/100</span>
+                                        </span>
+                                    </div>
+                                    <div className="h-3 md:h-4 w-full bg-black border border-current/40 p-0.5 relative">
+                                        {/* Background Grid Pattern */}
+                                        <div className="absolute inset-0 opacity-20 bg-[linear-gradient(90deg,currentColor_1px,transparent_1px)] bg-[length:4px_100%]"></div>
+                                        
+                                        {/* Progress Fill */}
+                                        <div 
+                                            className={`h-full bg-[var(--theme-color)] transition-all duration-700 ease-out relative ${isMastered ? 'shadow-[0_0_10px_var(--theme-color)]' : 'opacity-80'}`}
+                                            style={{ width: `${percent}%` }}
+                                        >
+                                             {/* Scanline on bar */}
+                                             <div className="absolute inset-0 bg-white/20 w-full h-full opacity-50 bg-[linear-gradient(0deg,transparent_50%,rgba(0,0,0,0.5)_50%)] bg-[length:100%_4px]"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })()}
                     </div>
                 </div>
 

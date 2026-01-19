@@ -1,6 +1,6 @@
 import React from 'react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { AppState, KanjiData } from '../types';
+import { AppState, KanjiData, UserProgress } from '../types';
 import { kanjiList } from '../data/kanji';
 import { Activity, BookOpen, AlertCircle, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -26,12 +26,16 @@ const StatCard = ({ title, value, icon: Icon, color }: any) => (
 export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
   const totalKanji = kanjiList.length;
   const learnedCount = Object.keys(state.progress).length;
-  const graduatedCount = Object.values(state.progress).filter(p => p.status === 'graduated').length;
+  
+  // Cast to UserProgress[] to handle potential 'unknown' inference from Object.values
+  const allProgress = Object.values(state.progress) as UserProgress[];
+
+  const graduatedCount = allProgress.filter(p => p.status === 'graduated').length;
   
   // Calculate accuracy
   let totalCorrect = 0;
   let totalAttempts = 0;
-  Object.values(state.progress).forEach(p => {
+  allProgress.forEach(p => {
     totalCorrect += p.correctCount;
     totalAttempts += (p.correctCount + p.missCount);
   });
@@ -49,7 +53,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
     reviews: Math.floor(Math.random() * (learnedCount / 2)) // Mock visual
   }));
 
-  const weakKanjiIds = Object.values(state.progress)
+  const weakKanjiIds = allProgress
     .filter(p => p.missCount > 2)
     .sort((a, b) => b.missCount - a.missCount)
     .slice(0, 5)

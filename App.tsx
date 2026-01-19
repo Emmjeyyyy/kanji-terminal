@@ -234,7 +234,7 @@ export default function App() {
             </div>
         )}
 
-        {currentView === 'learn' && <LearnMode />}
+        {currentView === 'learn' && <LearnMode progress={state.progress} />}
 
         {currentView === 'quiz_setup' && (
              <div className="flex flex-col items-center justify-center h-full gap-8 md:gap-12 animate-in fade-in duration-500">
