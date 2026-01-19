@@ -25,6 +25,26 @@ const StatCard = ({ title, value, icon: Icon, color, themeColor }: any) => (
   </motion.div>
 );
 
+const PrintStreamX = ({ filled = true, className = "" }: { filled?: boolean, className?: string }) => {
+  // Path for a thick X shape
+  const d = "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12L19 6.41Z";
+  
+  return (
+    <svg 
+      viewBox="0 0 24 24" 
+      className={className} 
+      style={{ overflow: 'visible' }}
+    >
+      <path 
+        d={d} 
+        fill={filled ? "currentColor" : "none"} 
+        stroke={filled ? "none" : "currentColor"}
+        strokeWidth={filled ? "0" : "1.5"}
+      />
+    </svg>
+  );
+};
+
 export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
   const totalKanji = kanjiList.length;
   const themeColor = state.settings.theme === 'green' ? '#4ade80' : '#fbbf24';
@@ -81,12 +101,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
 
   return (
     <div className="space-y-2 md:space-y-3 pb-1 overflow-y-auto h-full pr-1 custom-scrollbar flex flex-col">
-      <header className="border-b pb-1 mb-1 shrink-0" style={{ borderColor: themeColor }}>
-        <h1 className="text-xl md:text-3xl font-bold uppercase tracking-tighter flex items-center gap-2">
-          <Activity className="w-5 h-5 md:w-6 md:h-6" /> 
-          Operator Stats
-        </h1>
-        <p className="text-[10px] md:text-xs opacity-90 font-mono mt-0.5">System Status: ONLINE // Monitoring Learning Progress</p>
+      <header className="border-b pb-1 mb-1 shrink-0 flex justify-between items-end" style={{ borderColor: themeColor }}>
+        <div>
+            <h1 className="text-xl md:text-3xl font-bold uppercase tracking-tighter flex items-center gap-2">
+            <Activity className="w-5 h-5 md:w-6 md:h-6" /> 
+            Operator Stats
+            </h1>
+            <p className="text-[10px] md:text-xs opacity-90 font-mono mt-0.5">System Status: ONLINE // Monitoring Learning Progress</p>
+        </div>
+        <div className="flex gap-2 md:gap-3 mb-1.5 opacity-100">
+             <PrintStreamX filled={true} className="w-4 h-4 md:w-5 md:h-5" />
+             <PrintStreamX filled={true} className="w-4 h-4 md:w-5 md:h-5" />
+             <PrintStreamX filled={false} className="w-4 h-4 md:w-5 md:h-5" />
+             <PrintStreamX filled={false} className="w-4 h-4 md:w-5 md:h-5" />
+        </div>
       </header>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 shrink-0">
