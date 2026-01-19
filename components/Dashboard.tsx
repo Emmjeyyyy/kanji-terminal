@@ -10,11 +10,12 @@ interface DashboardProps {
   onResolve: () => void;
 }
 
-const StatCard = ({ title, value, icon: Icon, color }: any) => (
+const StatCard = ({ title, value, icon: Icon, color, themeColor }: any) => (
   <motion.div 
     initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
-    className="border border-current p-2 md:p-3 rounded bg-opacity-10 bg-white/5 flex items-center justify-between hover:bg-white/10 transition-colors"
+    className="border border-current p-2 md:p-3 rounded bg-opacity-10 flex items-center justify-between hover:bg-white/10 transition-colors"
+    style={{ backgroundColor: themeColor + '10' }}
   >
     <div>
       <h3 className="text-[17px] md:text-[17px] opacity-90 uppercase tracking-widest font-bold">{title}</h3>
@@ -26,6 +27,7 @@ const StatCard = ({ title, value, icon: Icon, color }: any) => (
 
 export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
   const totalKanji = kanjiList.length;
+  const themeColor = state.settings.theme === 'green' ? '#4ade80' : '#fbbf24';
   
   // Learned: Count all kanji that the player has discovered (present in progress)
   const learnedCount = Object.keys(state.progress).length;
@@ -79,7 +81,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
 
   return (
     <div className="space-y-2 md:space-y-3 pb-1 overflow-y-auto h-full pr-1 custom-scrollbar flex flex-col">
-      <header className="border-b border-current pb-1 mb-1 shrink-0">
+      <header className="border-b pb-1 mb-1 shrink-0" style={{ borderColor: themeColor }}>
         <h1 className="text-xl md:text-3xl font-bold uppercase tracking-tighter flex items-center gap-2">
           <Activity className="w-5 h-5 md:w-6 md:h-6" /> 
           Operator Stats
@@ -88,34 +90,34 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
       </header>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 shrink-0">
-        <StatCard title="Learned" value={`${learnedCount}/${totalKanji}`} icon={BookOpen} />
-        <StatCard title="Mastered" value={`${masteryPercentage}%`} icon={TrendingUp} />
-        <StatCard title="Accuracy" value={`${accuracy}%`} icon={Activity} />
-        <StatCard title="Weak Items" value={weakCount} icon={AlertCircle} />
+        <StatCard title="Learned" value={`${learnedCount}/${totalKanji}`} icon={BookOpen} themeColor={themeColor} />
+        <StatCard title="Mastered" value={`${masteryPercentage}%`} icon={TrendingUp} themeColor={themeColor} />
+        <StatCard title="Accuracy" value={`${accuracy}%`} icon={Activity} themeColor={themeColor} />
+        <StatCard title="Weak Items" value={weakCount} icon={AlertCircle} themeColor={themeColor} />
       </div>
 
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-2 md:gap-4 mt-1">
-        <div className="lg:col-span-2 border border-current p-3 rounded bg-white/5 flex flex-col min-h-[220px]">
-            <h3 className="text-base md:text-lg mb-2 font-bold border-b border-current/30 pb-1">Review Frequency (Current Week)</h3>
+        <div className="lg:col-span-2 border border-current p-3 rounded flex flex-col min-h-[220px]" style={{ backgroundColor: themeColor + '10' }}>
+            <h3 className="text-base md:text-lg mb-2 font-bold border-b pb-1" style={{ borderColor: themeColor }}>Review Frequency (Current Week)</h3>
             <div className="flex-1 w-full min-h-[150px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} stroke="currentColor" />
-                  <XAxis dataKey="name" stroke="currentColor" tick={{fill: 'currentColor', fontSize: 12}} />
-                  <YAxis stroke="currentColor" tick={{fill: 'currentColor', fontSize: 12}} />
+                  <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} stroke={themeColor} />
+                  <XAxis dataKey="name" stroke={themeColor} tick={{fill: themeColor, fontSize: 12}} />
+                  <YAxis stroke={themeColor} tick={{fill: themeColor, fontSize: 12}} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#111', borderColor: 'currentColor', color: 'currentColor', fontSize: '12px' }}
-                    itemStyle={{ color: 'currentColor' }}
-                    cursor={{fill: 'rgba(255,255,255,0.1)'}}
+                    contentStyle={{ backgroundColor: '#111', borderColor: themeColor, color: themeColor, fontSize: '12px' }}
+                    itemStyle={{ color: themeColor }}
+                    cursor={{fill: themeColor, opacity: 0.1}}
                   />
-                  <Bar dataKey="sessions" fill="currentColor" fillOpacity={0.8} />
+                  <Bar dataKey="sessions" fill={themeColor} fillOpacity={0.8} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
         </div>
 
-        <div className="border border-current p-3 rounded bg-white/5 flex flex-col overflow-hidden min-h-[200px]">
-          <div className="flex justify-between items-center border-b border-current/30 pb-1 mb-2">
+        <div className="border border-current p-3 rounded flex flex-col overflow-hidden min-h-[200px]" style={{ backgroundColor: themeColor + '10' }}>
+          <div className="flex justify-between items-center border-b pb-1 mb-2" style={{ borderColor: themeColor }}>
             <h3 className="text-base md:text-lg font-bold">Critical Attention</h3>
             {weakKanji.length > 0 && (
                 <button 

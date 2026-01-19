@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { KanjiData, UserProgress } from '../types';
+import { KanjiData, UserProgress, AppSettings } from '../types';
 import { kanjiList } from '../data/kanji';
 import { Search, Filter, Database } from 'lucide-react';
 
 interface LearnModeProps {
   progress: Record<string, UserProgress>;
+  settings: AppSettings;
 }
 
-export const LearnMode: React.FC<LearnModeProps> = ({ progress }) => {
+export const LearnMode: React.FC<LearnModeProps> = ({ progress, settings }) => {
   const [filterLevel, setFilterLevel] = useState<'ALL' | 'N5' | 'N4'>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedKanji, setSelectedKanji] = useState<KanjiData | null>(null);
+
+  const themeColor = settings.theme === 'green' ? '#4ade80' : '#fbbf24';
 
   const filtered = kanjiList.filter(k => {
     const matchesLevel = filterLevel === 'ALL' || k.level === filterLevel;
@@ -23,12 +26,18 @@ export const LearnMode: React.FC<LearnModeProps> = ({ progress }) => {
   return (
     <div className="h-full flex flex-col md:flex-row gap-4 overflow-hidden">
       {/* Sidebar List - Top on mobile (30% height), Left on desktop (33% width) */}
-      <div className="w-full md:w-1/3 h-[30%] md:h-full flex flex-col border-b md:border-b-0 md:border-r border-current/30 pb-2 md:pb-0 md:pr-4 min-h-0 shrink-0">
+      <div 
+        className="w-full md:w-1/3 h-[30%] md:h-full flex flex-col border-b md:border-b-0 md:border-r pb-2 md:pb-0 md:pr-4 min-h-0 shrink-0"
+        style={{ borderColor: themeColor + '4D' }}
+      >
          <div className="mb-2 md:mb-4 flex flex-col gap-2 shrink-0">
             {/* Search Input */}
             <div className="relative group">
                 <div className="absolute -inset-0.5 bg-[var(--theme-color)] opacity-20 blur-sm transition-opacity group-focus-within:opacity-50"></div>
-                <div className="relative flex items-center bg-black/80 border border-current p-2 md:p-3 group-focus-within:shadow-[0_0_15px_var(--theme-color)] transition-shadow duration-300">
+                <div 
+                  className="relative flex items-center bg-black/80 border p-2 md:p-3 group-focus-within:shadow-[0_0_15px_var(--theme-color)] transition-shadow duration-300"
+                  style={{ borderColor: themeColor }}
+                >
                     <span className="mr-3 text-xl md:text-2xl animate-pulse text-[var(--theme-color)]">{'>'}</span>
                     <input 
                         type="text" 
@@ -43,7 +52,10 @@ export const LearnMode: React.FC<LearnModeProps> = ({ progress }) => {
             </div>
 
             {/* Filter Toggles */}
-            <div className="flex items-center justify-between border-b border-current/30 pb-2">
+            <div 
+              className="flex items-center justify-between border-b pb-2"
+              style={{ borderColor: themeColor + '4D' }}
+            >
                 <div className="flex items-center gap-2 opacity-90">
                     <Filter className="w-4 h-4" />
                     <span className="text-xs md:text-sm uppercase tracking-widest hidden sm:inline font-bold">Filter</span>
@@ -56,8 +68,9 @@ export const LearnMode: React.FC<LearnModeProps> = ({ progress }) => {
                             className={`text-xs md:text-sm px-3 md:px-4 py-1.5 border transition-all uppercase duration-200 tracking-wider font-bold ${
                                 filterLevel === lvl 
                                 ? 'bg-[var(--theme-color)] text-black border-transparent shadow-[0_0_10px_var(--theme-color)] scale-105' 
-                                : 'border-current/50 text-current hover:border-[var(--theme-color)] hover:shadow-[0_0_8px_var(--theme-color)] hover:bg-[var(--theme-color)]/10'
+                                : 'text-current hover:border-[var(--theme-color)] hover:shadow-[0_0_8px_var(--theme-color)] hover:bg-[var(--theme-color)]/10'
                             }`}
+                            style={{ borderColor: filterLevel === lvl ? 'transparent' : (themeColor + '80') }}
                         >
                             {lvl}
                         </button>
@@ -78,8 +91,9 @@ export const LearnMode: React.FC<LearnModeProps> = ({ progress }) => {
                     className={`w-full text-left p-3 md:p-4 border flex items-center justify-between group transition-all duration-200 relative overflow-hidden ${
                         selectedKanji?.id === k.id 
                         ? 'bg-[var(--theme-color)]/10 border-[var(--theme-color)] shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]' 
-                        : 'border-transparent border-b-current/20 hover:border-[var(--theme-color)] hover:shadow-[0_0_10px_var(--theme-color)_inset] hover:bg-[var(--theme-color)]/5'
+                        : 'border-transparent hover:border-[var(--theme-color)] hover:shadow-[0_0_10px_var(--theme-color)_inset] hover:bg-[var(--theme-color)]/5'
                     }`}
+                    style={selectedKanji?.id !== k.id ? { borderBottomWidth: '1px', borderBottomColor: themeColor + '33' } : undefined}
                 >
                     {selectedKanji?.id === k.id && <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[var(--theme-color)] shadow-[0_0_10px_var(--theme-color)]"></div>}
                     <div className="flex items-baseline gap-4 pl-2">
@@ -90,7 +104,10 @@ export const LearnMode: React.FC<LearnModeProps> = ({ progress }) => {
                 </button>
             ))}
             {filtered.length === 0 && (
-                <div className="text-center opacity-60 py-10 border border-dashed border-current/30">
+                <div 
+                  className="text-center opacity-60 py-10 border border-dashed"
+                  style={{ borderColor: themeColor + '4D' }}
+                >
                     <div className="text-3xl mb-2">?</div>
                     <p className="text-sm uppercase font-bold">No Data</p>
                 </div>
@@ -104,13 +121,21 @@ export const LearnMode: React.FC<LearnModeProps> = ({ progress }) => {
              <div className="flex flex-col h-full gap-3 md:gap-6 animate-in fade-in slide-in-from-right-4 duration-300 pb-1">
                 
                 {/* Header Block: Larger Min Height */}
-                <div className="flex-[0_0_auto] border-b-2 border-current pb-4 flex justify-between items-stretch relative overflow-hidden min-h-[140px] md:min-h-[200px]">
+                <div 
+                  className="flex-[0_0_auto] border-b-2 pb-4 flex justify-between items-stretch relative overflow-hidden min-h-[140px] md:min-h-[200px]"
+                  style={{ borderColor: themeColor }}
+                >
                     <div className="absolute top-0 right-0 text-[clamp(8rem,20vh,16rem)] opacity-10 font-bold select-none pointer-events-none -mt-6 -mr-6 text-[var(--theme-color)] leading-none">{selectedKanji.char}</div>
                     
                     <div className="relative z-10 flex flex-col justify-between">
                         <div className="flex items-center gap-3 mb-2">
                             <span className="text-xs md:text-sm bg-[var(--theme-color)] text-black px-2 py-0.5 font-bold rounded-sm inline-block tracking-widest shadow-[0_0_5px_var(--theme-color)]">JLPT {selectedKanji.level}</span>
-                            <span className="text-xs md:text-sm border border-current px-2 py-0.5 opacity-80 font-mono font-bold">ID: {selectedKanji.id.toUpperCase()}</span>
+                            <span 
+                              className="text-xs md:text-sm border px-2 py-0.5 opacity-80 font-mono font-bold"
+                              style={{ borderColor: themeColor }}
+                            >
+                                ID: {selectedKanji.id.toUpperCase()}
+                            </span>
                         </div>
                         {/* Scalable Main Char - Increased Size */}
                         <h2 className="text-[clamp(6rem,16vh,12rem)] font-bold leading-none crt-text-glow text-[var(--theme-color)] mt-auto">{selectedKanji.char}</h2>
@@ -135,7 +160,10 @@ export const LearnMode: React.FC<LearnModeProps> = ({ progress }) => {
                                         )}
                                         <span className="text-sm md:text-base font-mono font-bold leading-none">{count}<span className="text-[10px] opacity-60">/100</span></span>
                                     </div>
-                                    <div className="h-3 md:h-4 w-full bg-black border border-current/40 p-0.5 relative">
+                                    <div 
+                                      className="h-3 md:h-4 w-full bg-black border p-0.5 relative"
+                                      style={{ borderColor: themeColor + '66' }}
+                                    >
                                         <div className="absolute inset-0 opacity-20 bg-[linear-gradient(90deg,currentColor_1px,transparent_1px)] bg-[length:4px_100%]"></div>
                                         <div 
                                             className={`h-full bg-[var(--theme-color)] transition-all duration-700 ease-out relative ${isMastered ? 'shadow-[0_0_10px_var(--theme-color)]' : 'opacity-80'}`}
@@ -152,20 +180,48 @@ export const LearnMode: React.FC<LearnModeProps> = ({ progress }) => {
 
                 {/* Readings: Larger Height & Text */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 shrink-0 flex-[0_0_auto]">
-                    <div className="space-y-2 border border-current/30 p-3 md:p-5 bg-white/5 relative hover:border-[var(--theme-color)] transition-all flex flex-col justify-center min-h-[80px] md:min-h-[100px]">
-                        <h3 className="absolute -top-2.5 left-3 bg-black px-2 text-xs md:text-sm uppercase tracking-widest text-[var(--theme-color)] border border-current/30 font-bold">Onyomi</h3>
+                    <div 
+                      className="space-y-2 border p-3 md:p-5 bg-white/5 relative hover:border-[var(--theme-color)] transition-all flex flex-col justify-center min-h-[80px] md:min-h-[100px]"
+                      style={{ borderColor: themeColor + '4D' }}
+                    >
+                        <h3 
+                          className="absolute -top-2.5 left-3 bg-black px-2 text-xs md:text-sm uppercase tracking-widest text-[var(--theme-color)] border font-bold"
+                          style={{ borderColor: themeColor + '4D' }}
+                        >
+                          Onyomi
+                        </h3>
                         <div className="flex flex-wrap gap-2 md:gap-3 mt-1">
                             {selectedKanji.onyomi.map(r => (
-                                <span key={r} className="font-mono text-xl md:text-3xl px-3 py-1 border border-current/60 hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_10px_var(--theme-color)] transition-all cursor-default font-bold">{r}</span>
+                                <span 
+                                  key={r} 
+                                  className="font-mono text-xl md:text-3xl px-3 py-1 border hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_10px_var(--theme-color)] transition-all cursor-default font-bold"
+                                  style={{ borderColor: themeColor + '99' }}
+                                >
+                                  {r}
+                                </span>
                             ))}
                             {selectedKanji.onyomi.length === 0 && <span className="opacity-40 italic text-sm md:text-base">-- NO DATA --</span>}
                         </div>
                     </div>
-                    <div className="space-y-2 border border-current/30 p-3 md:p-5 bg-white/5 relative hover:border-[var(--theme-color)] transition-all flex flex-col justify-center min-h-[80px] md:min-h-[100px]">
-                         <h3 className="absolute -top-2.5 left-3 bg-black px-2 text-xs md:text-sm uppercase tracking-widest text-[var(--theme-color)] border border-current/30 font-bold">Kunyomi</h3>
+                    <div 
+                      className="space-y-2 border p-3 md:p-5 bg-white/5 relative hover:border-[var(--theme-color)] transition-all flex flex-col justify-center min-h-[80px] md:min-h-[100px]"
+                      style={{ borderColor: themeColor + '4D' }}
+                    >
+                         <h3 
+                           className="absolute -top-2.5 left-3 bg-black px-2 text-xs md:text-sm uppercase tracking-widest text-[var(--theme-color)] border font-bold"
+                           style={{ borderColor: themeColor + '4D' }}
+                         >
+                           Kunyomi
+                         </h3>
                         <div className="flex flex-wrap gap-2 md:gap-3 mt-1">
                             {selectedKanji.kunyomi.map(r => (
-                                <span key={r} className="font-mono text-xl md:text-3xl px-3 py-1 border border-current/60 hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_10px_var(--theme-color)] transition-all cursor-default font-bold">{r}</span>
+                                <span 
+                                  key={r} 
+                                  className="font-mono text-xl md:text-3xl px-3 py-1 border hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_10px_var(--theme-color)] transition-all cursor-default font-bold"
+                                  style={{ borderColor: themeColor + '99' }}
+                                >
+                                  {r}
+                                </span>
                             ))}
                              {selectedKanji.kunyomi.length === 0 && <span className="opacity-40 italic text-sm md:text-base">-- NO DATA --</span>}
                         </div>
@@ -174,13 +230,20 @@ export const LearnMode: React.FC<LearnModeProps> = ({ progress }) => {
 
                 {/* Vocabulary: Larger Text */}
                 <div className="flex-1 min-h-0 flex flex-col">
-                    <h3 className="uppercase tracking-widest text-sm md:text-base opacity-80 border-b border-current/30 pb-2 mb-3 flex items-center justify-between font-bold shrink-0">
+                    <h3 
+                      className="uppercase tracking-widest text-sm md:text-base opacity-80 border-b pb-2 mb-3 flex items-center justify-between font-bold shrink-0"
+                      style={{ borderColor: themeColor + '4D' }}
+                    >
                         <span>Vocabulary Matrix</span>
                         <span className="text-xs md:text-sm">{selectedKanji.examples.length} ENTRIES</span>
                     </h3>
                     <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 grid gap-3 auto-rows-min content-start">
                         {selectedKanji.examples.map((ex, i) => (
-                            <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 md:p-4 border-l-4 border-current/30 bg-white/5 hover:bg-white/10 hover:border-[var(--theme-color)] transition-all group gap-2">
+                            <div 
+                              key={i} 
+                              className="flex flex-col sm:flex-row sm:items-center justify-between p-3 md:p-4 border-l-4 bg-white/5 hover:bg-white/10 hover:border-[var(--theme-color)] transition-all group gap-2"
+                              style={{ borderColor: themeColor + '4D' }}
+                            >
                                 <div className="flex items-baseline gap-3 md:gap-6">
                                     <span className="text-xl md:text-2xl font-bold text-current group-hover:crt-text-glow transition-all">{ex.word}</span>
                                     <span className="text-sm md:text-lg opacity-80 font-mono font-bold">[{ex.reading}]</span>
@@ -192,7 +255,10 @@ export const LearnMode: React.FC<LearnModeProps> = ({ progress }) => {
                 </div>
              </div>
          ) : (
-            <div className="h-full flex flex-col items-center justify-center opacity-60 border-2 border-dashed border-current/30 rounded-lg m-4 md:m-8 hover:border-[var(--theme-color)] hover:opacity-90 transition-all duration-500 hover:shadow-[0_0_20px_var(--theme-color)_inset]">
+            <div 
+              className="h-full flex flex-col items-center justify-center opacity-60 border-2 border-dashed rounded-lg m-4 md:m-8 hover:border-[var(--theme-color)] hover:opacity-90 transition-all duration-500 hover:shadow-[0_0_20px_var(--theme-color)_inset]"
+              style={{ borderColor: themeColor + '4D' }}
+            >
                 <Database className="w-16 h-16 md:w-32 md:h-32 mb-6 opacity-60 animate-pulse" />
                 <p className="text-xl md:text-3xl font-bold uppercase tracking-widest text-center">Select Data Node</p>
                 <div className="mt-8 md:mt-12 flex gap-4">

@@ -301,16 +301,21 @@ export default function App() {
 
   const sessionsDone = getSessionsDoneToday();
   const isDailyLimitReached = sessionsDone >= 5;
+  const themeColor = state.settings.theme === 'green' ? '#4ade80' : '#fbbf24';
 
   return (
     <CRTContainer settings={state.settings}>
       {/* Top Navigation - Fixed Height */}
-      <nav className="flex flex-col md:flex-row justify-between items-center mb-2 md:mb-4 border-b-2 border-current pb-2 md:pb-4 select-none shrink-0 gap-2 md:gap-0">
+      <nav 
+        className="flex flex-col md:flex-row justify-between items-center mb-2 md:mb-4 border-b-2 pb-2 md:pb-4 select-none shrink-0 gap-2 md:gap-0"
+        style={{ borderColor: themeColor }}
+      >
         <div className="flex items-center gap-4 md:gap-8 w-full md:w-auto justify-between md:justify-start">
             <pre 
-                className="font-bold border-r-2 border-current pr-2 md:pr-4 mr-1 md:mr-2 crt-text-glow2 font-mono leading-none tracking-tighter"
+                className="font-bold border-r-2 pr-2 md:pr-4 mr-1 md:mr-2 crt-text-glow2 font-mono leading-none tracking-tighter"
                 style={{
-                  fontSize: 'clamp(3px, 0.75vw, 8px)'
+                  fontSize: 'clamp(3px, 0.75vw, 8px)',
+                  borderColor: themeColor
                 }}
             >
 {`██╗  ██╗ █████╗ ███╗   ██╗     ██╗██╗    ████████╗███████╗██████╗ ███╗   ███╗██╗███╗   ██╗ █████╗ ██╗     
@@ -382,7 +387,7 @@ export default function App() {
             </div>
         )}
 
-        {currentView === 'learn' && <LearnMode progress={state.progress} />}
+        {currentView === 'learn' && <LearnMode progress={state.progress} settings={state.settings} />}
 
         {currentView === 'quiz_setup' && (
              <div className="flex flex-col items-center justify-center h-full gap-8 md:gap-12 animate-in fade-in duration-500">
@@ -421,44 +426,84 @@ export default function App() {
         
         {currentView === 'settings' && (
             <div className="flex-1 overflow-y-auto flex items-center justify-center">
-                <div className="max-w-xl mx-auto w-full border-2 border-current p-6 md:p-10 bg-black/60 shadow-[0_0_30px_rgba(0,0,0,0.6)] backdrop-blur-sm">
-                    <h2 className="text-2xl md:text-3xl font-bold mb-6 border-b-2 border-current pb-3 crt-text-glow">SYSTEM CONFIGURATION</h2>
+                <div 
+                    className="max-w-xl mx-auto w-full border-2 p-6 md:p-10 bg-black/60 shadow-[0_0_30px_rgba(0,0,0,0.6)] backdrop-blur-sm"
+                    style={{ borderColor: themeColor }}
+                >
+                    <h2 
+                        className="text-2xl md:text-3xl font-bold mb-6 border-b-2 pb-3 crt-text-glow"
+                        style={{ borderColor: themeColor }}
+                    >
+                        SYSTEM CONFIGURATION
+                    </h2>
                     <div className="space-y-6">
                         <div className="flex items-center justify-between group">
                             <span className="text-base md:text-lg group-hover:text-shadow-[0_0_3px_currentColor] font-bold">Monitor Theme</span>
-                            <button onClick={toggleTheme} className="border-2 border-current px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold">
+                            <button 
+                                onClick={toggleTheme} 
+                                className="border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
+                                style={{ borderColor: themeColor }}
+                            >
                                 {state.settings.theme}
                             </button>
                         </div>
                         <div className="flex items-center justify-between group">
                             <span className="text-base md:text-lg group-hover:text-shadow-[0_0_3px_currentColor] font-bold">CRT Emulation</span>
-                            <button onClick={() => toggleSetting('crtEnabled')} className="border-2 border-current px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold">
+                            <button 
+                                onClick={() => toggleSetting('crtEnabled')} 
+                                className="border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
+                                style={{ borderColor: themeColor }}
+                            >
                                 {state.settings.crtEnabled ? 'ON' : 'OFF'}
                             </button>
                         </div>
                         {state.settings.crtEnabled && (
                             <>
-                                <div className="flex items-center justify-between pl-6 border-l-2 border-current/30 group">
+                                <div 
+                                    className="flex items-center justify-between pl-6 border-l-2 group"
+                                    style={{ borderColor: themeColor + '4D' }}
+                                >
                                     <span className="text-base md:text-lg opacity-80 group-hover:opacity-100 group-hover:text-shadow-[0_0_3px_currentColor]">Scanlines</span>
-                                    <button onClick={() => toggleSetting('scanlines')} className="border-2 border-current px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold">
+                                    <button 
+                                        onClick={() => toggleSetting('scanlines')} 
+                                        className="border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
+                                        style={{ borderColor: themeColor }}
+                                    >
                                         {state.settings.scanlines ? 'ON' : 'OFF'}
                                     </button>
                                 </div>
-                                <div className="flex items-center justify-between pl-6 border-l-2 border-current/30 group">
+                                <div 
+                                    className="flex items-center justify-between pl-6 border-l-2 group"
+                                    style={{ borderColor: themeColor + '4D' }}
+                                >
                                     <span className="text-base md:text-lg opacity-80 group-hover:opacity-100 group-hover:text-shadow-[0_0_3px_currentColor]">Phosphor Flicker</span>
-                                    <button onClick={() => toggleSetting('flicker')} className="border-2 border-current px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold">
+                                    <button 
+                                        onClick={() => toggleSetting('flicker')} 
+                                        className="border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
+                                        style={{ borderColor: themeColor }}
+                                    >
                                         {state.settings.flicker ? 'ON' : 'OFF'}
                                     </button>
                                 </div>
-                                <div className="flex items-center justify-between pl-6 border-l-2 border-current/30 group">
+                                <div 
+                                    className="flex items-center justify-between pl-6 border-l-2 group"
+                                    style={{ borderColor: themeColor + '4D' }}
+                                >
                                     <span className="text-base md:text-lg opacity-80 group-hover:opacity-100 group-hover:text-shadow-[0_0_3px_currentColor]">Phosphor Glow</span>
-                                    <button onClick={() => toggleSetting('glow')} className="border-2 border-current px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold">
+                                    <button 
+                                        onClick={() => toggleSetting('glow')} 
+                                        className="border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
+                                        style={{ borderColor: themeColor }}
+                                    >
                                         {state.settings.glow ? 'ON' : 'OFF'}
                                     </button>
                                 </div>
                             </>
                         )}
-                         <div className="pt-8 mt-8 border-t-2 border-current/30 text-center">
+                         <div 
+                            className="pt-8 mt-8 border-t-2 text-center"
+                            style={{ borderColor: themeColor + '4D' }}
+                         >
                              <button 
                                 onClick={() => { localStorage.removeItem('crt_kanji_lab_v1'); window.location.reload(); }}
                                 className="text-red-500 border-2 border-red-500 px-6 py-2 hover:bg-red-900/40 hover:text-red-300 hover:shadow-[0_0_20px_red] text-xs md:text-sm font-bold uppercase transition-all tracking-widest"
@@ -473,7 +518,10 @@ export default function App() {
       </main>
       
       {/* Footer Status Line - Fixed Height */}
-      <footer className="mt-2 pt-2 border-t-2 border-current/30 flex justify-between items-center text-[10px] md:text-xs opacity-60 font-mono uppercase shrink-0 font-bold tracking-widest">
+      <footer 
+        className="mt-2 pt-2 border-t-2 flex justify-between items-center text-[10px] md:text-xs opacity-60 font-mono uppercase shrink-0 font-bold tracking-widest"
+        style={{ borderColor: themeColor }}
+      >
         <span>Mem: {Object.keys(state.progress).length} Blocks</span>
         <div className="flex items-center gap-2">
             <span>Ver 1.0.4 // BOOT COMPLETE</span>
