@@ -109,7 +109,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
             </h1>
             <p className="text-[10px] md:text-xs opacity-90 font-mono mt-0.5">System Status: ONLINE // Monitoring Learning Progress</p>
         </div>
-        <div className="flex -translate-y-[40px] gap-[50px] md:gap-[40px] mb-1.5 opacity-100 mr-[45px]">
+        <div className="flex -translate-y-[44px] gap-[50px] md:gap-[40px] mb-1.5 opacity-100 mr-[45px]">
           <PrintStreamX filled={true} className="w-3 h-3 md:w-4 md:h-4" />
           <PrintStreamX filled={true} className="w-3 h-3 md:w-4 md:h-4" />
           <PrintStreamX filled={false} className="w-3 h-3 md:w-4 md:h-4" />
