@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <!-- Phosphor Glow Filter -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Scanline Pattern -->
+    <pattern id="scanlines" patternUnits="userSpaceOnUse" width="1" height="4">
+      <rect width="128" height="2" fill="black" opacity="0.4"/>
+    </pattern>
+  </defs>
+  
+  <!-- Dark Screen Background -->
+  <rect width="128" height="128" rx="24" fill="#050505"/>
+  
+  <!-- Terminal Border -->
+  <rect x="6" y="6" width="116" height="116" rx="18" fill="none" stroke="#33ff33" stroke-width="4" filter="url(#glow)" opacity="0.9"/>
+  
+  <!-- The Letter K -->
+  <text x="50%" y="62%" dominant-baseline="middle" text-anchor="middle" font-family="monospace" font-weight="900" font-size="90" fill="#33ff33" filter="url(#glow)" style="text-shadow: 0 0 10px #33ff33;">K</text>
+  
+  <!-- Scanline Overlay -->
+  <rect width="128" height="128" rx="24" fill="url(#scanlines)" pointer-events="none"/>
+</svg>
