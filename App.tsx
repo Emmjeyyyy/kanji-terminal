@@ -417,6 +417,9 @@ export default function App() {
   const isDailyLimitReached = sessionsDone >= 5;
   const themeColor = state.settings.theme === 'green' ? '#4ade80' : '#fbbf24';
 
+  const now = new Date();
+  const versionStr = `VER ${now.getMonth() + 1}.${now.getDate()}.${now.getFullYear().toString().slice(-2)}`;
+
   return (
     <CRTContainer settings={state.settings}>
       {/* Top Navigation - Fixed Height */}
@@ -638,7 +641,7 @@ export default function App() {
       >
         <span>Mem: {Object.keys(state.progress).length} Blocks</span>
         <div className="flex items-center gap-2">
-            <span>Ver 1.0.4 // BOOT COMPLETE</span>
+            <span>{versionStr} // BOOT COMPLETE</span>
             <div className="w-2.5 h-2.5 border-2 border-current animate-spin" />
         </div>
       </footer>
