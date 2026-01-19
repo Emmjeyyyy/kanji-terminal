@@ -21,7 +21,7 @@ const StatCard = ({ title, value, icon: Icon, color, themeColor }: any) => (
       <h3 className="text-[17px] md:text-[17px] opacity-90 uppercase tracking-widest font-bold">{title}</h3>
       <p className="text-xl md:text-2xl font-bold mt-1 font-mono">{value}</p>
     </div>
-    <Icon className={`w-5 h-5 md:w-6 md:h-6 opacity-90 ${color}`} />
+    <Icon className={`w-10 h-10 md:w-12 md:h-12 opacity-90 ${color}`} />
   </motion.div>
 );
 
