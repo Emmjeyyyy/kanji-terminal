@@ -126,7 +126,7 @@ export const LearnMode: React.FC<LearnModeProps> = ({ progress }) => {
                             const isMastered = count >= 100;
                             
                             return (
-                                <div className="w-full max-w-[240px] mt-2">
+                                <div className="w-[180px] md:w-[240px] mt-2">
                                     <div className="flex justify-end items-center gap-2 mb-1 opacity-90">
                                         {isMastered ? (
                                             <span className="text-[10px] font-mono uppercase font-bold tracking-widest text-[var(--theme-color)] animate-pulse shadow-[0_0_5px_var(--theme-color)] px-1">MASTERY ACHIEVED</span>
