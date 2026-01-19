@@ -37,6 +37,7 @@ export interface AppState {
     date: string; // "YYYY-MM-DD" or DateString
     count: number;
   };
+  reviewHistory: Record<string, number>; // Tracks number of reviews per date key
 }
 
 export interface AppSettings {

@@ -20,7 +20,8 @@ const DEFAULT_STATE: AppState = {
   dailySessionTracker: {
       date: new Date().toDateString(),
       count: 0
-  }
+  },
+  reviewHistory: {}
 };
 
 type View = 'dashboard' | 'learn' | 'quiz_setup' | 'quiz_active' | 'boss_mode' | 'settings';
@@ -52,7 +53,8 @@ export default function App() {
             ...DEFAULT_STATE.progress,
             ...(parsed.progress || {})
           },
-          dailySessionTracker: tracker
+          dailySessionTracker: tracker,
+          reviewHistory: parsed.reviewHistory || {}
         };
       } catch (e) {
         console.error("Save corrupted", e);
@@ -92,9 +94,22 @@ export default function App() {
         });
     }
 
+    // Update Review History: Count SESSIONS, not items.
+    // Only for Daily Session and Simulation Mode.
+    let newHistory = state.reviewHistory;
+    
+    if (isDailySession || isBossMode) {
+        const todayKey = new Date().toDateString();
+        // Create copy to ensure immutability
+        newHistory = { ...state.reviewHistory };
+        // Increment session count by 1
+        newHistory[todayKey] = (newHistory[todayKey] || 0) + 1;
+    }
+
     const newState = {
       ...state,
-      progress: newProgress
+      progress: newProgress,
+      reviewHistory: newHistory
     };
 
     // If this was a daily session, increment the counter for today
@@ -117,6 +132,7 @@ export default function App() {
     setState(newState);
     setIsDailySession(false);
     setIsWeakSession(false);
+    setIsBossMode(false);
     setCurrentView('dashboard');
   };
 

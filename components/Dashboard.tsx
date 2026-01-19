@@ -55,13 +55,27 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
   const weakCount = weakProgressList.length;
   const weakKanji = weakProgressList.map(p => kanjiList.find(k => k.id === p.kanjiId)!);
 
-  // Chart Data preparation
-  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  // Chart Data preparation (Current Calendar Week: Sun-Sat)
+  const chartData = [];
+  const today = new Date();
+  const currentDayIndex = today.getDay(); // 0 = Sun, 6 = Sat
+  
+  // Calculate start of the week (Sunday)
+  const startOfWeek = new Date(today);
+  startOfWeek.setDate(today.getDate() - currentDayIndex);
+  
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  const chartData = daysOfWeek.map(day => ({
-    name: day,
-    reviews: Math.floor(Math.random() * (learnedCount > 0 ? learnedCount / 2 : 1)) // Mock visual
-  }));
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(startOfWeek);
+    d.setDate(startOfWeek.getDate() + i);
+    const dateKey = d.toDateString();
+    
+    chartData.push({
+      name: days[i],
+      sessions: state.reviewHistory[dateKey] || 0
+    });
+  }
 
   return (
     <div className="space-y-2 md:space-y-3 pb-1 overflow-y-auto h-full pr-1 custom-scrollbar flex flex-col">
@@ -82,7 +96,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
 
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-2 md:gap-4 mt-1">
         <div className="lg:col-span-2 border border-current p-3 rounded bg-white/5 flex flex-col min-h-[220px]">
-            <h3 className="text-base md:text-lg mb-2 font-bold border-b border-current/30 pb-1">Review Frequency (7 Days)</h3>
+            <h3 className="text-base md:text-lg mb-2 font-bold border-b border-current/30 pb-1">Review Frequency (Current Week)</h3>
             <div className="flex-1 w-full min-h-[150px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
@@ -94,7 +108,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
                     itemStyle={{ color: 'currentColor' }}
                     cursor={{fill: 'rgba(255,255,255,0.1)'}}
                   />
-                  <Bar dataKey="reviews" fill="currentColor" fillOpacity={0.8} />
+                  <Bar dataKey="sessions" fill="currentColor" fillOpacity={0.8} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
