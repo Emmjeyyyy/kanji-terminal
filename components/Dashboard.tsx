@@ -112,8 +112,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
         <div className="flex gap-[10px] md:gap-[10px] opacity-100 items-center mt-[10px]">
           <PrintStreamX filled={false} className="w-10 h-10 md:w-12 md:h-12" />
           <PrintStreamX filled={false} className="w-10 h-10 md:w-12 md:h-12" />
-          <PrintStreamX filled={true} className="w-10 h-10 md:w-12 md:h-12" />
-          <PrintStreamX filled={true} className="w-10 h-10 md:w-12 md:h-12" />
+          <PrintStreamX filled={true} className="w-10 h-10 md:w-12 md:h-12 drop-shadow-[0_0_2px_rgba(74,222,128,0.35)]" />
+          <PrintStreamX filled={true} className="w-10 h-10 md:w-12 md:h-12 drop-shadow-[0_0_4px_rgba(74,222,128,0.35)]" />
         </div>
       </header>
 
