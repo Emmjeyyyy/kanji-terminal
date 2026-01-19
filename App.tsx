@@ -14,6 +14,7 @@ const DEFAULT_STATE: AppState = {
     crtEnabled: true,
     scanlines: true,
     flicker: true,
+    glow: true,
     audio: false,
     theme: 'green'
   },
@@ -447,6 +448,12 @@ export default function App() {
                                     <span className="text-base md:text-lg opacity-80 group-hover:opacity-100 group-hover:text-shadow-[0_0_3px_currentColor]">Phosphor Flicker</span>
                                     <button onClick={() => toggleSetting('flicker')} className="border-2 border-current px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold">
                                         {state.settings.flicker ? 'ON' : 'OFF'}
+                                    </button>
+                                </div>
+                                <div className="flex items-center justify-between pl-6 border-l-2 border-current/30 group">
+                                    <span className="text-base md:text-lg opacity-80 group-hover:opacity-100 group-hover:text-shadow-[0_0_3px_currentColor]">Phosphor Glow</span>
+                                    <button onClick={() => toggleSetting('glow')} className="border-2 border-current px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold">
+                                        {state.settings.glow ? 'ON' : 'OFF'}
                                     </button>
                                 </div>
                             </>

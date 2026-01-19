@@ -44,6 +44,7 @@ export interface AppSettings {
   crtEnabled: boolean;
   scanlines: boolean;
   flicker: boolean;
+  glow: boolean;
   audio: boolean;
   theme: 'green' | 'amber';
 }

@@ -59,14 +59,26 @@
       }
       
       .crt-text-glow {
-        text-shadow: 0 0 5px currentColor;
+        text-shadow: none;
+        transition: text-shadow 0.3s ease;
+      }
+      .enable-crt-glow .crt-text-glow {
+        text-shadow: 0 0 6px currentColor;
       }
 
       .crt-text-glow2 {
+        text-shadow: none;
+        transition: text-shadow 0.3s ease;
+      }
+      .enable-crt-glow .crt-text-glow2 {
         text-shadow: 0 0 2px currentColor;
       }
       
       .crt-box-glow {
+        box-shadow: none;
+        transition: box-shadow 0.3s ease;
+      }
+      .enable-crt-glow .crt-box-glow {
         box-shadow: 0 0 4px currentColor, inset 0 0 4px currentColor;
       }
 
