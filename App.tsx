@@ -453,8 +453,17 @@ export default function App() {
         </div>
         
         <div className="flex items-center gap-4 w-full md:w-auto justify-end">
-            <button onClick={() => toggleSetting('crtEnabled')} className={`text-[10px] md:text-xs uppercase border-2 border-current px-2 py-0.5 rounded transition-all duration-200 font-bold tracking-wider ${state.settings.crtEnabled ? 'bg-[var(--theme-color)] text-black shadow-[0_0_15px_var(--theme-color)]' : 'opacity-60 hover:opacity-100'}`}>
-                CRT: {state.settings.crtEnabled ? 'ON' : 'OFF'}
+            <button
+            onClick={() => toggleSetting('crtEnabled')}
+            className={`text-[15px] uppercase border-2 border-current
+                w-[90px] px-0 py-[5px] rounded
+                transition-all duration-200 font-bold tracking-wider
+                ${state.settings.crtEnabled
+                ? 'bg-[var(--theme-color)] text-black shadow-[0_0_15px_var(--theme-color)]'
+                : 'opacity-60 hover:opacity-100'
+                }`}
+            >
+            CRT: {state.settings.crtEnabled ? 'ON' : 'OFF'}
             </button>
             <button onClick={toggleSettingsView} className={`hover:opacity-100 transition-opacity ${currentView === 'settings' ? 'opacity-100 text-[var(--theme-color)] drop-shadow-[0_0_5px_var(--theme-color)]' : 'opacity-60'}`}>
                 <Settings size={20} />
