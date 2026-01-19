@@ -65,6 +65,7 @@ export default function App() {
   });
 
   const [currentView, setCurrentView] = useState<View>('dashboard');
+  const [previousView, setPreviousView] = useState<View>('dashboard');
   const [activeQuizQuestions, setActiveQuizQuestions] = useState<QuizQuestion[]>([]);
   const [isBossMode, setIsBossMode] = useState(false);
   const [isDailySession, setIsDailySession] = useState(false);
@@ -280,6 +281,15 @@ export default function App() {
       }));
   };
 
+  const toggleSettingsView = () => {
+    if (currentView === 'settings') {
+        setCurrentView(previousView);
+    } else {
+        setPreviousView(currentView);
+        setCurrentView('settings');
+    }
+  };
+
   const getSessionsDoneToday = () => {
       const today = new Date().toDateString();
       if (state.dailySessionTracker.date === today) {
@@ -323,7 +333,7 @@ export default function App() {
             <button onClick={() => toggleSetting('crtEnabled')} className={`text-[10px] md:text-xs uppercase border-2 border-current px-2 py-0.5 rounded transition-all duration-200 font-bold tracking-wider ${state.settings.crtEnabled ? 'bg-[var(--theme-color)] text-black shadow-[0_0_15px_var(--theme-color)]' : 'opacity-60 hover:opacity-100'}`}>
                 CRT: {state.settings.crtEnabled ? 'ON' : 'OFF'}
             </button>
-            <button onClick={() => setCurrentView('settings')} className={`hover:opacity-100 transition-opacity ${currentView === 'settings' ? 'opacity-100' : 'opacity-60'}`}>
+            <button onClick={toggleSettingsView} className={`hover:opacity-100 transition-opacity ${currentView === 'settings' ? 'opacity-100 text-[var(--theme-color)] drop-shadow-[0_0_5px_var(--theme-color)]' : 'opacity-60'}`}>
                 <Settings size={20} />
             </button>
         </div>
