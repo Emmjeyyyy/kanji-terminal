@@ -307,7 +307,7 @@ export default function App() {
       <nav className="flex flex-col md:flex-row justify-between items-center mb-2 md:mb-4 border-b-2 border-current pb-2 md:pb-4 select-none shrink-0 gap-2 md:gap-0">
         <div className="flex items-center gap-4 md:gap-8 w-full md:w-auto justify-between md:justify-start">
             <pre 
-                className="font-bold border-r-2 border-current pr-2 md:pr-4 mr-1 md:mr-2 font-mono leading-none tracking-tighter"
+                className="font-bold border-r-2 border-current pr-2 md:pr-4 mr-1 md:mr-2 crt-text-glow2 font-mono leading-none tracking-tighter"
                 style={{
                   fontSize: 'clamp(3px, 0.75vw, 8px)'
                 }}
