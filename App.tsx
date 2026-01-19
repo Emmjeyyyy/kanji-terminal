@@ -66,6 +66,7 @@ export default function App() {
   const [activeQuizQuestions, setActiveQuizQuestions] = useState<QuizQuestion[]>([]);
   const [isBossMode, setIsBossMode] = useState(false);
   const [isDailySession, setIsDailySession] = useState(false);
+  const [isWeakSession, setIsWeakSession] = useState(false);
 
   // Save on change
   useEffect(() => {
@@ -73,12 +74,27 @@ export default function App() {
   }, [state]);
 
   const updateProgress = (results: Record<string, UserProgress>) => {
+    let newProgress = {
+      ...state.progress,
+      ...results
+    };
+
+    // If this was a "Resolve" session, we reset the missCount for the items processed
+    // This allows them to be cleared from the Weak Items list
+    if (isWeakSession) {
+        Object.keys(results).forEach(id => {
+            if (newProgress[id]) {
+                newProgress[id] = {
+                    ...newProgress[id],
+                    missCount: 0 // Clear the "Weak" status
+                };
+            }
+        });
+    }
+
     const newState = {
       ...state,
-      progress: {
-        ...state.progress,
-        ...results
-      }
+      progress: newProgress
     };
 
     // If this was a daily session, increment the counter for today
@@ -100,6 +116,7 @@ export default function App() {
 
     setState(newState);
     setIsDailySession(false);
+    setIsWeakSession(false);
     setCurrentView('dashboard');
   };
 
@@ -162,7 +179,23 @@ export default function App() {
     generateQuestions(finalIds);
     setIsBossMode(false);
     setIsDailySession(true);
+    setIsWeakSession(false);
     setCurrentView('quiz_active');
+  };
+
+  const startResolveSession = () => {
+      // Find all items with missCount > 0
+      const weakIds = Object.values(state.progress)
+          .filter(p => p.missCount > 0)
+          .map(p => p.kanjiId);
+      
+      if (weakIds.length === 0) return;
+      
+      generateQuestions(weakIds);
+      setIsBossMode(false);
+      setIsDailySession(false);
+      setIsWeakSession(true);
+      setCurrentView('quiz_active');
   };
 
   const startBossRun = (level: 'N5' | 'N4') => {
@@ -174,6 +207,7 @@ export default function App() {
       generateQuestions(targetKanji.map(k => k.id));
       setIsBossMode(true);
       setIsDailySession(false);
+      setIsWeakSession(false);
       setCurrentView('quiz_active');
   };
 
@@ -272,7 +306,7 @@ export default function App() {
         {currentView === 'dashboard' && (
             <div className="h-full flex flex-col gap-2 md:gap-4 overflow-hidden">
                 <div className="flex-1 min-h-0">
-                    <Dashboard state={state} />
+                    <Dashboard state={state} onResolve={startResolveSession} />
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 shrink-0 pb-1">
@@ -342,6 +376,7 @@ export default function App() {
                 appState={state}
                 onExit={() => setCurrentView('dashboard')}
                 isTimed={isBossMode}
+                isAccuracyMode={isDailySession || isBossMode}
             />
         )}
         

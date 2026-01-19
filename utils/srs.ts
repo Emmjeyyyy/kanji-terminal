@@ -24,6 +24,8 @@ export const calculateReview = (
   let currentEf = progress?.ef ?? 2.5;
   let correctCount = progress?.correctCount ?? 0;
   let missCount = progress?.missCount ?? 0;
+  const accCorrect = progress?.accCorrect ?? 0;
+  const accMiss = progress?.accMiss ?? 0;
 
   // Update history stats
   if (quality >= 3) {
@@ -67,7 +69,9 @@ export const calculateReview = (
     status: quality >= 4 ? 'graduated' : (quality >= 3 ? 'review' : 'learning'),
     correctCount,
     missCount,
-    lastReviewed: now
+    lastReviewed: now,
+    accCorrect,
+    accMiss
   };
 };
 

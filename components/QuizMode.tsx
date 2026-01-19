@@ -11,9 +11,10 @@ interface QuizModeProps {
   appState: AppState;
   onExit: () => void;
   isTimed?: boolean;
+  isAccuracyMode?: boolean;
 }
 
-export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, settings, appState, onExit, isTimed }) => {
+export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, settings, appState, onExit, isTimed, isAccuracyMode }) => {
   // Queue state for dynamic mastery loop
   const [queue, setQueue] = useState<QuizQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -69,6 +70,15 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
         
         const currentProg = appState.progress[kanjiId] || sessionResults[kanjiId];
         const newProg = calculateReview(kanjiId, currentProg, defaultQuality);
+
+        // Update Accuracy Stats if in valid mode
+        if (isAccuracyMode) {
+            if (isCorrect) {
+                newProg.accCorrect = (newProg.accCorrect || 0) + 1;
+            } else {
+                newProg.accMiss = (newProg.accMiss || 0) + 1;
+            }
+        }
         
         setSessionResults(prev => ({
             ...prev,
@@ -93,6 +103,15 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
         const currentProg = appState.progress[kanjiId] || sessionResults[kanjiId];
         const newProg = calculateReview(kanjiId, currentProg, quality);
         
+        if (isAccuracyMode) {
+            // Assume 3+ is correct, <3 is miss for stats
+            if (quality >= 3) {
+                newProg.accCorrect = (newProg.accCorrect || 0) + 1;
+            } else {
+                newProg.accMiss = (newProg.accMiss || 0) + 1;
+            }
+        }
+
         setSessionResults(prev => ({
             ...prev,
             [kanjiId]: newProg

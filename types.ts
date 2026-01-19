@@ -26,6 +26,8 @@ export interface UserProgress {
   correctCount: number;
   missCount: number;
   lastReviewed: number;
+  accCorrect?: number; // Tracks correct answers in Daily/Sim modes
+  accMiss?: number;    // Tracks misses in Daily/Sim modes
 }
 
 export interface AppState {

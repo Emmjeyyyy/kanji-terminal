@@ -2,11 +2,12 @@ import React from 'react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { AppState, KanjiData, UserProgress } from '../types';
 import { kanjiList } from '../data/kanji';
-import { Activity, BookOpen, AlertCircle, TrendingUp } from 'lucide-react';
+import { Activity, BookOpen, AlertCircle, TrendingUp, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface DashboardProps {
   state: AppState;
+  onResolve: () => void;
 }
 
 const StatCard = ({ title, value, icon: Icon, color }: any) => (
@@ -23,39 +24,44 @@ const StatCard = ({ title, value, icon: Icon, color }: any) => (
   </motion.div>
 );
 
-export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
   const totalKanji = kanjiList.length;
+  
+  // Learned: Count all kanji that the player has discovered (present in progress)
   const learnedCount = Object.keys(state.progress).length;
   
-  // Cast to UserProgress[] to handle potential 'unknown' inference from Object.values
   const allProgress = Object.values(state.progress) as UserProgress[];
 
+  // Mastered: Global mastery progress (mastered / total DB)
   const graduatedCount = allProgress.filter(p => p.status === 'graduated').length;
+  const masteryPercentage = Math.round((graduatedCount / totalKanji) * 100);
   
-  // Calculate accuracy
-  let totalCorrect = 0;
-  let totalAttempts = 0;
+  // Accuracy: Correct answers / Total attempts (From Daily/Sim only)
+  let totalAccCorrect = 0;
+  let totalAccAttempts = 0;
   allProgress.forEach(p => {
-    totalCorrect += p.correctCount;
-    totalAttempts += (p.correctCount + p.missCount);
+    const c = p.accCorrect || 0;
+    const m = p.accMiss || 0;
+    totalAccCorrect += c;
+    totalAccAttempts += (c + m);
   });
-  const accuracy = totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+  const accuracy = totalAccAttempts > 0 ? Math.round((totalAccCorrect / totalAccAttempts) * 100) : 0;
+
+  // Weak Items: Track all kanji answered incorrectly (missCount > 0)
+  const weakProgressList = allProgress
+    .filter(p => p.missCount > 0)
+    .sort((a, b) => b.missCount - a.missCount);
+    
+  const weakCount = weakProgressList.length;
+  const weakKanji = weakProgressList.map(p => kanjiList.find(k => k.id === p.kanjiId)!);
 
   // Chart Data preparation
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   const chartData = daysOfWeek.map(day => ({
     name: day,
-    reviews: Math.floor(Math.random() * (learnedCount / 2)) // Mock visual
+    reviews: Math.floor(Math.random() * (learnedCount > 0 ? learnedCount / 2 : 1)) // Mock visual
   }));
-
-  const weakKanjiIds = allProgress
-    .filter(p => p.missCount > 2)
-    .sort((a, b) => b.missCount - a.missCount)
-    .slice(0, 5)
-    .map(p => p.kanjiId);
-    
-  const weakKanji = kanjiList.filter(k => weakKanjiIds.includes(k.id));
 
   return (
     <div className="space-y-2 md:space-y-3 pb-1 overflow-y-auto h-full pr-1 custom-scrollbar flex flex-col">
@@ -69,9 +75,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 shrink-0">
         <StatCard title="Learned" value={`${learnedCount}/${totalKanji}`} icon={BookOpen} />
-        <StatCard title="Mastered" value={graduatedCount} icon={TrendingUp} />
+        <StatCard title="Mastered" value={`${masteryPercentage}%`} icon={TrendingUp} />
         <StatCard title="Accuracy" value={`${accuracy}%`} icon={Activity} />
-        <StatCard title="Weak Items" value={weakKanji.length} icon={AlertCircle} />
+        <StatCard title="Weak Items" value={weakCount} icon={AlertCircle} />
       </div>
 
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-2 md:gap-4 mt-1">
@@ -95,7 +101,17 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
         </div>
 
         <div className="border border-current p-3 rounded bg-white/5 flex flex-col overflow-hidden min-h-[200px]">
-          <h3 className="text-base md:text-lg mb-2 font-bold border-b border-current/30 pb-1">Critical Attention</h3>
+          <div className="flex justify-between items-center border-b border-current/30 pb-1 mb-2">
+            <h3 className="text-base md:text-lg font-bold">Critical Attention</h3>
+            {weakKanji.length > 0 && (
+                <button 
+                  onClick={onResolve}
+                  className="flex items-center gap-1.5 px-3 py-1 text-[10px] md:text-xs font-bold uppercase border border-current hover:bg-[var(--theme-color)] hover:text-black transition-all shadow-[0_0_5px_rgba(0,0,0,0.5)] hover:shadow-[0_0_10px_var(--theme-color)] active:scale-95"
+                >
+                    <Zap size={12} fill="currentColor" /> RESOLVE
+                </button>
+            )}
+          </div>
           {weakKanji.length === 0 ? (
             <div className="flex-1 flex items-center justify-center opacity-75 italic text-xs md:text-sm">
               No weak items detected.
