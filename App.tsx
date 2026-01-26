@@ -189,11 +189,21 @@ export default function App() {
   // Track initial load for intro animation
   const [introPlayed, setIntroPlayed] = useState(false);
 
+  // Clock state
+  const [currentTime, setCurrentTime] = useState(new Date());
+
   useEffect(() => {
     const timer = setTimeout(() => {
         setIntroPlayed(true);
     }, 1200);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const clock = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(clock);
   }, []);
 
   // Save on change
@@ -427,8 +437,12 @@ export default function App() {
   const isDailyLimitReached = sessionsDone >= 5;
   const themeColor = state.settings.theme === 'green' ? '#4ade80' : '#fbbf24';
 
-  const now = new Date();
-  const versionStr = `VER ${now.getMonth() + 1}.${now.getDate()}.${now.getFullYear().toString().slice(-2)}`;
+  const versionStr = `VER ${currentTime.getMonth() + 1}.${currentTime.getDate()}.${currentTime.getFullYear().toString().slice(-2)}`;
+  
+  const h = currentTime.getHours().toString().padStart(2, '0');
+  const m = currentTime.getMinutes().toString().padStart(2, '0');
+  const s = currentTime.getSeconds().toString().padStart(2, '0');
+  const tickRateStr = `TICKRATE ${h}:${m}:${s}`;
 
   return (
     <CRTContainer settings={state.settings}>
@@ -661,7 +675,9 @@ export default function App() {
         style={{ borderColor: themeColor }}
       >
         <span>Mem: {Object.keys(state.progress).length} Blocks</span>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+            <span>{tickRateStr}</span>
+            <span className="opacity-50">/</span>
             <span>{versionStr} // BOOT COMPLETE</span>
             <div className="w-2.5 h-2.5 border-2 border-current animate-spin" />
         </div>
