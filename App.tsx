@@ -675,10 +675,8 @@ export default function App() {
         style={{ borderColor: themeColor }}
       >
         <span>Mem: {Object.keys(state.progress).length} Blocks</span>
-        <div className="flex items-center gap-4">
-            <span>{tickRateStr}</span>
-            <span className="opacity-50">/</span>
-            <span>{versionStr} // BOOT COMPLETE</span>
+        <div className="flex items-center gap-2">
+            <span>{tickRateStr} // {versionStr} // BOOT COMPLETE</span>
             <div className="w-2.5 h-2.5 border-2 border-current animate-spin" />
         </div>
       </footer>

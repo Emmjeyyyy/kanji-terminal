@@ -22,7 +22,7 @@
   <rect x="6" y="6" width="116" height="116" rx="18" fill="none" stroke="#33ff33" stroke-width="4" filter="url(#glow)" opacity="0.9"/>
   
   <!-- The Letter K -->
-  <text x="50%" y="62%" dominant-baseline="middle" text-anchor="middle" font-family="monospace" font-weight="900" font-size="90" fill="#33ff33" filter="url(#glow)" style="text-shadow: 0 0 10px #33ff33;">K</text>
+  <text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="monospace" font-weight="900" font-size="90" fill="#33ff33" filter="url(#glow)" style="text-shadow: 0 0 10px #33ff33;">K</text>
   
   <!-- Scanline Overlay -->
   <rect width="128" height="128" rx="24" fill="url(#scanlines)" pointer-events="none"/>
