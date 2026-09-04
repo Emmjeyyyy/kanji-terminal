@@ -184,6 +184,7 @@ export default function App() {
   const [activeQuizQuestions, setActiveQuizQuestions] = useState<QuizQuestion[]>([]);
   const [isBossMode, setIsBossMode] = useState(false);
   const [isDailySession, setIsDailySession] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
   const [isWeakSession, setIsWeakSession] = useState(false);
   
   // Track initial load for intro animation
@@ -338,8 +339,8 @@ export default function App() {
   const startResolveSession = () => {
       // Find all items with missCount > 0
       const weakIds = Object.values(state.progress)
-          .filter(p => p.missCount > 0)
-          .map(p => p.kanjiId);
+          .filter((p: any) => p.missCount > 0)
+          .map((p: any) => p.kanjiId);
       
       if (weakIds.length === 0) return;
       
@@ -657,7 +658,7 @@ export default function App() {
                             style={{ borderColor: themeColor + '4D' }}
                          >
                              <button 
-                                onClick={() => { localStorage.removeItem('crt_kanji_lab_v1'); window.location.reload(); }}
+                                onClick={() => setShowResetModal(true)}
                                 className="select-none text-red-500 border-2 border-red-500 px-6 py-2 hover:bg-red-900/40 hover:text-red-300 hover:shadow-[0_0_20px_red] text-xs md:text-sm font-bold uppercase transition-all tracking-widest"
                              >
                                 <Power className="inline w-4 h-4 mr-2" /> Factory Reset
@@ -668,7 +669,108 @@ export default function App() {
             </div>
         )}
       </main>
-      
+
+      {/* Factory Reset Confirmation Modal */}
+      {showResetModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}
+          onClick={() => setShowResetModal(false)}
+        >
+          <div
+            className="relative font-mono uppercase tracking-widest select-none"
+            style={{
+              border: `2px solid #ef4444`,
+              boxShadow: `0 0 30px #ef444480, 0 0 60px #ef444430, inset 0 0 30px rgba(239,68,68,0.05)`,
+              backgroundColor: '#050a05',
+              minWidth: '320px',
+              maxWidth: '480px',
+              width: '90vw',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Scanline overlay */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)',
+                zIndex: 1
+              }}
+            />
+
+            {/* Corner brackets */}
+            <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-red-500" style={{ margin: '-2px' }} />
+            <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-red-500" style={{ margin: '-2px' }} />
+            <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-red-500" style={{ margin: '-2px' }} />
+            <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-red-500" style={{ margin: '-2px' }} />
+
+            <div className="relative z-10 p-6 flex flex-col gap-5">
+              {/* Header */}
+              <div className="flex items-center gap-3 border-b-2 border-red-500/40 pb-4">
+                <Power className="w-5 h-5 text-red-500 shrink-0" style={{ filter: 'drop-shadow(0 0 6px #ef4444)' }} />
+                <span className="text-red-500 text-sm font-bold tracking-widest" style={{ textShadow: '0 0 8px #ef4444' }}>
+                  System Warning
+                </span>
+              </div>
+
+              {/* Body */}
+              <div className="flex flex-col gap-3 text-center">
+                <p className="text-red-400 text-xs leading-relaxed" style={{ textShadow: '0 0 4px #ef444466' }}>
+                  Factory reset will permanently erase all progress data.
+                </p>
+                <p className="text-red-300/60 text-[10px] leading-relaxed">
+                  [ learned kanji ] [ quiz history ] [ session records ]
+                </p>
+                <p
+                  className="text-red-500 text-xs font-bold animate-pulse mt-1"
+                  style={{ textShadow: '0 0 8px #ef4444' }}
+                >
+                  This action cannot be undone.
+                </p>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setShowResetModal(false)}
+                  className="flex-1 text-xs py-2 px-4 font-bold border-2 transition-all"
+                  style={{
+                    borderColor: themeColor,
+                    color: themeColor,
+                    textShadow: `0 0 6px ${themeColor}`,
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = themeColor + '22';
+                    (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 15px ${themeColor}66`;
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
+                    (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
+                  }}
+                >
+                  [ Abort ]
+                </button>
+                <button
+                  onClick={() => { localStorage.removeItem('crt_kanji_lab_v1'); window.location.reload(); }}
+                  className="flex-1 text-xs py-2 px-4 font-bold border-2 border-red-500 text-red-500 transition-all"
+                  style={{ textShadow: '0 0 6px #ef4444' }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ef444422';
+                    (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 20px #ef444466';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
+                    (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
+                  }}
+                >
+                  [ Confirm Reset ]
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Footer Status Line - Fixed Height */}
       <footer 
         className="mt-2 pt-2 border-t-2 flex justify-between items-center text-[10px] md:text-xs opacity-60 font-mono uppercase shrink-0 font-bold tracking-widest"

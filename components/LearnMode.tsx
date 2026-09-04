@@ -130,12 +130,6 @@ export const LearnMode: React.FC<LearnModeProps> = ({ progress, settings }) => {
                     <div className="relative z-10 flex flex-col justify-between">
                         <div className="flex items-center gap-3 mb-2">
                             <span className="text-xs md:text-sm bg-[var(--theme-color)] text-black px-2 py-0.5 font-bold rounded-sm inline-block tracking-widest shadow-[0_0_5px_var(--theme-color)]">JLPT {selectedKanji.level}</span>
-                            <span 
-                              className="text-xs md:text-sm border px-2 py-0.5 opacity-80 font-mono font-bold"
-                              style={{ borderColor: themeColor }}
-                            >
-                                ID: {selectedKanji.id.toUpperCase()}
-                            </span>
                         </div>
                         {/* Scalable Main Char - Increased Size */}
                         <h2 className="text-[clamp(6rem,16vh,12rem)] font-bold leading-none crt-text-glow text-[var(--theme-color)] mt-auto">{selectedKanji.char}</h2>

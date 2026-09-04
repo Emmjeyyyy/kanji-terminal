@@ -233,7 +233,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                              <div className="text-6xl md:text-8xl font-bold text-[var(--theme-color)] crt-text-glow leading-none p-1">{currentQuestion.kanji.char}</div>
                              <div className="pb-1 min-w-0 flex-1">
                                  <div className="text-2xl md:text-4xl font-bold opacity-90 uppercase tracking-widest leading-tight truncate mb-1">{currentQuestion.kanji.meaning}</div>
-                                 <div className="text-xs md:text-sm uppercase opacity-60 font-bold tracking-widest">JLPT {currentQuestion.kanji.level} • ID: {currentQuestion.kanji.id.toUpperCase()}</div>
+                                 <div className="text-xs md:text-sm uppercase opacity-60 font-bold tracking-widest">JLPT {currentQuestion.kanji.level}</div>
                              </div>
                         </div>
 
