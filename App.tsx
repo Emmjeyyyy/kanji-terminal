@@ -139,7 +139,7 @@ const DEFAULT_STATE: AppState = {
     reviewHistory: {}
 };
 
-type View = 'dashboard' | 'learn_intro' | 'learn_quiz' | 'review_setup' | 'review_quiz' | 'sim_setup' | 'sim_quiz' | 'learn' | 'settings';
+type View = 'dashboard' | 'learn_intro' | 'learn_quiz' | 'review_setup' | 'review_quiz' | 'sim_setup' | 'sim_quiz' | 'learn';
 
 export default function App() {
     // Initialize state from local storage to prevent settings reset on refresh
@@ -185,6 +185,7 @@ export default function App() {
     const [showResetModal, setShowResetModal] = useState(false);
     const [importPendingData, setImportPendingData] = useState<AppState | null>(null);
     const [toastMessage, setToastMessage] = useState<string | null>(null);
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
 
     useEffect(() => {
         if (toastMessage) {
@@ -232,6 +233,7 @@ export default function App() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        setToastMessage("Save file exported!");
     };
 
     const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -373,6 +375,8 @@ export default function App() {
             pool = pool.filter(p => p.isDifficult);
         }
 
+        pool = shuffle(pool);
+
         // Sort: difficult first, then by nextReview ascending
         pool.sort((a, b) => {
             if (a.isDifficult && !b.isDifficult) return -1;
@@ -455,7 +459,7 @@ export default function App() {
 
             return { kanji: k, type, options, correctAnswer };
         });
-        setActiveQuizQuestions(questions);
+        setActiveQuizQuestions(shuffle(questions));
     };
 
     const toggleSetting = (key: keyof AppState['settings']) => {
@@ -479,12 +483,7 @@ export default function App() {
     };
 
     const toggleSettingsView = () => {
-        if (currentView === 'settings') {
-            setCurrentView(previousView);
-        } else {
-            setPreviousView(currentView);
-            setCurrentView('settings');
-        }
+        setShowSettingsModal(prev => !prev);
     };
 
     const getSessionsDoneToday = () => {
@@ -551,7 +550,7 @@ export default function App() {
                     >
                         CRT: {state.settings.crtEnabled ? 'ON' : 'OFF'}
                     </button>
-                    <button onClick={toggleSettingsView} className={`outline-none hover:opacity-100 transition-opacity ${currentView === 'settings' ? 'opacity-100 text-[var(--theme-color)] drop-shadow-[0_0_5px_var(--theme-color)]' : 'opacity-60'}`}>
+                    <button onClick={toggleSettingsView} className={`outline-none hover:opacity-100 transition-opacity ${showSettingsModal ? 'opacity-100 text-[var(--theme-color)] drop-shadow-[0_0_5px_var(--theme-color)]' : 'opacity-60'}`}>
                         <Settings size={30} />
                     </button>
                 </div>
@@ -668,118 +667,7 @@ export default function App() {
                     />
                 )}
 
-                {currentView === 'settings' && (
-                    <div className="flex-1 overflow-y-auto flex items-center justify-center">
-                        <div
-                            className="max-w-xl mx-auto w-full border-2 rounded-lg p-6 md:p-10 bg-black/60 shadow-[0_0_30px_rgba(0,0,0,0.6)] backdrop-blur-sm"
-                            style={{ borderColor: themeColor }}
-                        >
-                            <h2
-                                className="text-2xl md:text-3xl font-bold mb-6 border-b-2 pb-3 crt-text-glow"
-                                style={{ borderColor: themeColor }}
-                            >
-                                SYSTEM CONFIGURATION
-                            </h2>
-                            <div className="space-y-6">
-                                <div className="flex items-center justify-between group">
-                                    <span className="text-base md:text-lg group-hover:text-shadow-[0_0_3px_currentColor] font-bold">Monitor Theme</span>
-                                    <button
-                                        onClick={toggleTheme}
-                                        className="select-none border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
-                                        style={{ borderColor: themeColor }}
-                                    >
-                                        {state.settings.theme}
-                                    </button>
-                                </div>
-                                <div className="flex items-center justify-between group">
-                                    <span className="text-base md:text-lg group-hover:text-shadow-[0_0_3px_currentColor] font-bold">CRT Emulation</span>
-                                    <button
-                                        onClick={() => toggleSetting('crtEnabled')}
-                                        className="select-none border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
-                                        style={{ borderColor: themeColor }}
-                                    >
-                                        {state.settings.crtEnabled ? 'ON' : 'OFF'}
-                                    </button>
-                                </div>
-                                {state.settings.crtEnabled && (
-                                    <>
-                                        <div
-                                            className="flex items-center justify-between pl-6 border-l-2 group"
-                                            style={{ borderColor: themeColor + '4D' }}
-                                        >
-                                            <span className="text-base md:text-lg opacity-80 group-hover:opacity-100 group-hover:text-shadow-[0_0_3px_currentColor]">Scanlines</span>
-                                            <button
-                                                onClick={() => toggleSetting('scanlines')}
-                                                className="select-none border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
-                                                style={{ borderColor: themeColor }}
-                                            >
-                                                {state.settings.scanlines ? 'ON' : 'OFF'}
-                                            </button>
-                                        </div>
-                                        <div
-                                            className="flex items-center justify-between pl-6 border-l-2 group"
-                                            style={{ borderColor: themeColor + '4D' }}
-                                        >
-                                            <span className="text-base md:text-lg opacity-80 group-hover:opacity-100 group-hover:text-shadow-[0_0_3px_currentColor]">Phosphor Flicker</span>
-                                            <button
-                                                onClick={() => toggleSetting('flicker')}
-                                                className="select-none border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
-                                                style={{ borderColor: themeColor }}
-                                            >
-                                                {state.settings.flicker ? 'ON' : 'OFF'}
-                                            </button>
-                                        </div>
-                                        <div
-                                            className="flex items-center justify-between pl-6 border-l-2 group"
-                                            style={{ borderColor: themeColor + '4D' }}
-                                        >
-                                            <span className="text-base md:text-lg opacity-80 group-hover:opacity-100 group-hover:text-shadow-[0_0_3px_currentColor]">Phosphor Glow</span>
-                                            <button
-                                                onClick={() => toggleSetting('glow')}
-                                                className="select-none border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
-                                                style={{ borderColor: themeColor }}
-                                            >
-                                                {state.settings.glow ? 'ON' : 'OFF'}
-                                            </button>
-                                        </div>
-                                    </>
-                                )}
-                                
-                                <div
-                                    className="flex justify-center gap-4 pt-6 mt-6 border-t-2"
-                                    style={{ borderColor: themeColor + '4D' }}
-                                >
-                                    <button
-                                        onClick={exportData}
-                                        className="select-none border-2 px-4 py-2 text-xs md:text-sm font-bold uppercase hover:bg-white/10 transition-all tracking-widest"
-                                        style={{ borderColor: themeColor }}
-                                    >
-                                        Export Save
-                                    </button>
-                                    <label
-                                        className="select-none border-2 px-4 py-2 text-xs md:text-sm font-bold uppercase hover:bg-white/10 transition-all tracking-widest cursor-pointer"
-                                        style={{ borderColor: themeColor }}
-                                    >
-                                        Import Save
-                                        <input type="file" accept=".json" className="hidden" onChange={handleImport} />
-                                    </label>
-                                </div>
-
-                                <div
-                                    className="pt-6 mt-6 border-t-2 text-center"
-                                    style={{ borderColor: themeColor + '4D' }}
-                                >
-                                    <button
-                                        onClick={() => setShowResetModal(true)}
-                                        className="select-none text-red-500 border-2 border-red-500 px-6 py-2 hover:bg-red-900/40 hover:text-red-300 hover:shadow-[0_0_20px_red] text-xs md:text-sm font-bold uppercase transition-all tracking-widest"
-                                    >
-                                        <Power className="inline w-4 h-4 mr-2" /> Factory Reset
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                
             </main>
 
             {/* Factory Reset Confirmation Modal */}
@@ -965,6 +853,7 @@ export default function App() {
                                     onClick={() => {
                                         setState(importPendingData);
                                         setImportPendingData(null);
+                                        setToastMessage("Data imported successfully!");
                                     }}
                                     className="flex-1 text-xs py-2 px-4 font-bold border-2 transition-all text-black hover:scale-[1.02]"
                                     style={{
@@ -996,7 +885,7 @@ export default function App() {
             {/* Custom Toast Notification */}
             {toastMessage && (
                 <div 
-                    className="absolute top-8 left-1/2 -translate-x-1/2 z-[100] px-6 py-3 font-mono font-bold uppercase tracking-widest text-sm md:text-base animate-in slide-in-from-top-4 fade-in duration-300 select-none text-center"
+                    className="absolute top-24 left-1/2 -translate-x-1/2 z-[100] px-6 py-3 font-mono font-bold uppercase tracking-widest text-sm md:text-base animate-in slide-in-from-top-20 fade-in duration-300 select-none text-center"
                     style={{ 
                         backgroundColor: 'rgba(5, 10, 5, 0.95)',
                         border: `2px solid ${themeColor}`, 
@@ -1005,6 +894,134 @@ export default function App() {
                     }}
                 >
                     <span style={{ textShadow: `0 0 8px ${themeColor}` }}>{toastMessage}</span>
+                </div>
+            )}
+
+            {/* Settings Overlay Modal */}
+            {showSettingsModal && (
+                <div 
+                    className="fixed inset-0 z-[60] flex flex-col items-center justify-center p-4 overflow-hidden animate-in fade-in duration-300"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.9)' }}
+                >
+                    <div className="w-full flex justify-center relative z-10">
+                        <div
+                            className="max-w-xl mx-auto w-full border-2 rounded-lg p-6 md:p-10 bg-black/60 shadow-[0_0_30px_rgba(0,0,0,0.6)] backdrop-blur-sm"
+                            style={{ borderColor: themeColor }}
+                        >
+                            <div className="flex justify-between items-start mb-6 border-b-2 pb-3" style={{ borderColor: themeColor }}>
+                                <h2
+                                    className="text-2xl md:text-3xl font-bold crt-text-glow m-0"
+                                    style={{ borderColor: themeColor }}
+                                >
+                                    SYSTEM CONFIGURATION
+                                </h2>
+                                <button 
+                                    onClick={toggleSettingsView}
+                                    className="opacity-60 hover:opacity-100 hover:text-[var(--theme-color)] hover:shadow-[0_0_10px_var(--theme-color)] transition-all font-bold tracking-widest uppercase border-2 p-1 px-3 select-none text-xs md:text-sm bg-black ml-4 shrink-0"
+                                    style={{ borderColor: themeColor }}
+                                >
+                                    [ CLOSE ]
+                                </button>
+                            </div>
+                            <div className="space-y-6">
+                                <div className="flex items-center justify-between group">
+                                    <span className="text-base md:text-lg group-hover:text-shadow-[0_0_3px_currentColor] font-bold">Monitor Theme</span>
+                                    <button
+                                        onClick={toggleTheme}
+                                        className="select-none border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
+                                        style={{ borderColor: themeColor }}
+                                    >
+                                        {state.settings.theme}
+                                    </button>
+                                </div>
+                                <div className="flex items-center justify-between group">
+                                    <span className="text-base md:text-lg group-hover:text-shadow-[0_0_3px_currentColor] font-bold">CRT Emulation</span>
+                                    <button
+                                        onClick={() => toggleSetting('crtEnabled')}
+                                        className="select-none border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
+                                        style={{ borderColor: themeColor }}
+                                    >
+                                        {state.settings.crtEnabled ? 'ON' : 'OFF'}
+                                    </button>
+                                </div>
+                                {state.settings.crtEnabled && (
+                                    <>
+                                        <div
+                                            className="flex items-center justify-between pl-6 border-l-2 group"
+                                            style={{ borderColor: themeColor + '4D' }}
+                                        >
+                                            <span className="text-base md:text-lg opacity-80 group-hover:opacity-100 group-hover:text-shadow-[0_0_3px_currentColor]">Scanlines</span>
+                                            <button
+                                                onClick={() => toggleSetting('scanlines')}
+                                                className="select-none border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
+                                                style={{ borderColor: themeColor }}
+                                            >
+                                                {state.settings.scanlines ? 'ON' : 'OFF'}
+                                            </button>
+                                        </div>
+                                        <div
+                                            className="flex items-center justify-between pl-6 border-l-2 group"
+                                            style={{ borderColor: themeColor + '4D' }}
+                                        >
+                                            <span className="text-base md:text-lg opacity-80 group-hover:opacity-100 group-hover:text-shadow-[0_0_3px_currentColor]">Phosphor Flicker</span>
+                                            <button
+                                                onClick={() => toggleSetting('flicker')}
+                                                className="select-none border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
+                                                style={{ borderColor: themeColor }}
+                                            >
+                                                {state.settings.flicker ? 'ON' : 'OFF'}
+                                            </button>
+                                        </div>
+                                        <div
+                                            className="flex items-center justify-between pl-6 border-l-2 group"
+                                            style={{ borderColor: themeColor + '4D' }}
+                                        >
+                                            <span className="text-base md:text-lg opacity-80 group-hover:opacity-100 group-hover:text-shadow-[0_0_3px_currentColor]">Phosphor Glow</span>
+                                            <button
+                                                onClick={() => toggleSetting('glow')}
+                                                className="select-none border-2 px-4 py-2 uppercase text-sm md:text-base hover:bg-[var(--theme-color)] hover:text-black hover:shadow-[0_0_15px_var(--theme-color)] w-28 transition-all font-bold"
+                                                style={{ borderColor: themeColor }}
+                                            >
+                                                {state.settings.glow ? 'ON' : 'OFF'}
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
+                                
+                                <div
+                                    className="flex justify-center gap-4 pt-6 mt-6 border-t-2"
+                                    style={{ borderColor: themeColor + '4D' }}
+                                >
+                                    <button
+                                        onClick={exportData}
+                                        className="select-none border-2 px-4 py-2 text-xs md:text-sm font-bold uppercase hover:bg-white/10 transition-all tracking-widest"
+                                        style={{ borderColor: themeColor }}
+                                    >
+                                        Export Save
+                                    </button>
+                                    <label
+                                        className="select-none border-2 px-4 py-2 text-xs md:text-sm font-bold uppercase hover:bg-white/10 transition-all tracking-widest cursor-pointer"
+                                        style={{ borderColor: themeColor }}
+                                    >
+                                        Import Save
+                                        <input type="file" accept=".json" className="hidden" onChange={handleImport} />
+                                    </label>
+                                </div>
+
+                                <div
+                                    className="pt-6 mt-6 border-t-2 text-center"
+                                    style={{ borderColor: themeColor + '4D' }}
+                                >
+                                    <button
+                                        onClick={() => setShowResetModal(true)}
+                                        className="select-none text-red-500 border-2 border-red-500 px-6 py-2 hover:bg-red-900/40 hover:text-red-300 hover:shadow-[0_0_20px_red] text-xs md:text-sm font-bold uppercase transition-all tracking-widest"
+                                    >
+                                        <Power className="inline w-4 h-4 mr-2" /> Factory Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
         </CRTContainer>
