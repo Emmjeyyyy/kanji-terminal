@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 
 interface DashboardProps {
   state: AppState;
-  onResolve: () => void;
 }
 
 const StatCard = ({ title, value, icon: Icon, color, themeColor }: any) => (
@@ -45,7 +44,7 @@ const PrintStreamX = ({ filled = true, className = "" }: { filled?: boolean, cla
   );
 };
 
-export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
   const totalKanji = kanjiList.length;
   const themeColor = state.settings.theme === 'green' ? '#4ade80' : '#fbbf24';
   
@@ -55,8 +54,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
   const allProgress = Object.values(state.progress) as UserProgress[];
 
   // Mastered: Global mastery progress (mastered / total DB)
-  const graduatedCount = allProgress.filter(p => p.status === 'graduated').length;
-  const masteryPercentage = Math.round((graduatedCount / totalKanji) * 100);
+  const masteredCount = allProgress.filter(p => p.status === 'mastered').length;
+  const masteryPercentage = Math.round((masteredCount / totalKanji) * 100);
   
   // Accuracy: Correct answers / Total attempts (From Daily/Sim only)
   let totalAccCorrect = 0;
@@ -69,13 +68,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
   });
   const accuracy = totalAccAttempts > 0 ? Math.round((totalAccCorrect / totalAccAttempts) * 100) : 0;
 
-  // Weak Items: Track all kanji answered incorrectly (missCount > 0)
-  const weakProgressList = allProgress
-    .filter(p => p.missCount > 0)
+  // Difficult Items: Track all kanji flagged as difficult
+  const difficultProgressList = allProgress
+    .filter(p => p.isDifficult)
     .sort((a, b) => b.missCount - a.missCount);
     
-  const weakCount = weakProgressList.length;
-  const weakKanji = weakProgressList.map(p => kanjiList.find(k => k.id === p.kanjiId)!);
+  const difficultCount = difficultProgressList.length;
+  const difficultKanji = difficultProgressList.map(p => kanjiList.find(k => k.id === p.kanjiId)!);
 
   // Chart Data preparation (Current Calendar Week: Sun-Sat)
   const chartData = [];
@@ -121,7 +120,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
         <StatCard title="Learned" value={`${learnedCount}/${totalKanji}`} icon={BookOpen} themeColor={themeColor} />
         <StatCard title="Mastered" value={`${masteryPercentage}%`} icon={TrendingUp} themeColor={themeColor} />
         <StatCard title="Accuracy" value={`${accuracy}%`} icon={Activity} themeColor={themeColor} />
-        <StatCard title="Weak Items" value={weakCount} icon={AlertCircle} themeColor={themeColor} />
+        <StatCard title="Difficult" value={difficultCount} icon={AlertCircle} themeColor={themeColor} />
       </div>
 
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-2 md:gap-4 mt-1">
@@ -147,22 +146,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ state, onResolve }) => {
         <div className="border border-current p-3 rounded flex flex-col overflow-hidden min-h-[200px]" style={{ backgroundColor: themeColor + '10' }}>
           <div className="flex justify-between items-center border-b pb-1 mb-2" style={{ borderColor: themeColor }}>
             <h3 className="text-base md:text-lg font-bold">Critical Attention</h3>
-            {weakKanji.length > 0 && (
-                <button 
-                  onClick={onResolve}
-                  className="flex items-center gap-1.5 px-3 py-1 text-[13px] md:text-xs font-bold uppercase border border-current hover:bg-[var(--theme-color)] hover:text-black transition-all shadow-[0_0_5px_rgba(0,0,0,0.5)] hover:shadow-[0_0_10px_var(--theme-color)] active:scale-95"
-                >
-                    <Zap size={12} fill="currentColor" /> RESOLVE
-                </button>
-            )}
           </div>
-          {weakKanji.length === 0 ? (
+          {difficultKanji.length === 0 ? (
             <div className="flex-1 flex items-center justify-center opacity-75 italic text-xs md:text-[20px]">
-              No weak items detected.
+              No difficult items detected.
             </div>
           ) : (
             <div className="space-y-2 overflow-y-auto custom-scrollbar flex-1">
-              {weakKanji.map(k => (
+              {difficultKanji.map(k => (
                 <div key={k.id} className="flex items-center justify-between p-2 border border-current rounded hover:bg-white/5 transition-colors">
                   <span className="text-lg md:text-xl font-bold">{k.char}</span>
                   <div className="text-right">

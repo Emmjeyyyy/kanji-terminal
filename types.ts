@@ -22,10 +22,13 @@ export interface UserProgress {
   interval: number; // Days
   repetition: number;
   ef: number; // Easiness Factor
-  status: 'new' | 'learning' | 'review' | 'graduated';
+  status: 'new' | 'learning' | 'review' | 'mastered';
   correctCount: number;
   missCount: number;
   lastReviewed: number;
+  isLearned: boolean;
+  isDifficult: boolean;
+  difficultStreak: number;
   accCorrect?: number; // Tracks correct answers in Daily/Sim modes
   accMiss?: number;    // Tracks misses in Daily/Sim modes
 }
@@ -49,7 +52,7 @@ export interface AppSettings {
   theme: 'green' | 'amber';
 }
 
-export type QuizType = 'meaning' | 'reading' | 'reverse';
+export type QuizType = 'meaning' | 'reading' | 'reverse' | 'reading_reverse';
 
 export interface QuizQuestion {
   kanji: KanjiData;

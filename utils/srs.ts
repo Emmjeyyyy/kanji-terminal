@@ -66,10 +66,13 @@ export const calculateReview = (
     interval: nextInterval,
     repetition: nextRepetition,
     ef: nextEf,
-    status: quality >= 4 ? 'graduated' : (quality >= 3 ? 'review' : 'learning'),
+    status: quality >= 4 ? 'mastered' : (quality >= 3 ? 'review' : 'learning'),
     correctCount,
     missCount,
     lastReviewed: now,
+    isLearned: progress?.isLearned ?? true, // If calculating review, it implies it was learned
+    isDifficult: progress?.isDifficult ?? false,
+    difficultStreak: progress?.difficultStreak ?? 0,
     accCorrect,
     accMiss
   };

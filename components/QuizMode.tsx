@@ -12,9 +12,10 @@ interface QuizModeProps {
   onExit: () => void;
   isTimed?: boolean;
   isAccuracyMode?: boolean;
+  mode?: 'learn' | 'review' | 'simulation';
 }
 
-export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, settings, appState, onExit, isTimed, isAccuracyMode }) => {
+export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, settings, appState, onExit, isTimed, isAccuracyMode, mode = 'simulation' }) => {
   // Queue state for dynamic mastery loop
   const [queue, setQueue] = useState<QuizQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -141,7 +142,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
           <button onClick={onExit} className="select-none hover:bg-white/20 px-2 py-1 rounded transition-colors text-xs md:text-sm uppercase tracking-widest border border-current font-bold">[ ESC ] Abort</button>
           <div className="flex items-center gap-2">
               <span className="font-mono text-lg md:text-xl font-bold">Q: {currentIndex + 1}/{queue.length}</span>
-              {isRetry && feedback !== 'correct' && (
+              {currentIndex >= questions.length && (
                   <span className="bg-amber-500/20 text-amber-500 border border-amber-500 px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest flex items-center gap-1">
                       <RefreshCw size={10} /> Retry
                   </span>
@@ -169,8 +170,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
              {/* Prompt Title */}
              {!showAnswer && (
                  <h2 className="text-sm md:text-base uppercase tracking-[0.3em] mb-2 md:mb-4 opacity-80 font-bold border-b border-current/30 pb-2 w-full text-center shrink-0">
-                   {currentQuestion.type === 'reading' ? 'Select Correct Reading' : 
-                    currentQuestion.type === 'meaning' ? 'Select Correct Meaning' : 'Select Matching Kanji'}
+                   {mode === 'learn' ? 'LEARN QUIZ' : mode === 'review' ? 'REVIEW SESSION' : 'SIMULATION'}
                  </h2>
              )}
              
@@ -180,9 +180,18 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                     {/* Large Character Display */}
                     <div className="flex-shrink-0 mb-4 md:mb-8 text-center flex-1 flex flex-col justify-center min-h-0">
                         <div className="text-[5rem] md:text-[8rem] lg:text-[10rem] leading-none font-bold crt-text-glow2 transition-all duration-300">
-                            {currentQuestion.type === 'reverse' ? <span className="text-3xl md:text-6xl max-w-2xl block leading-tight">{currentQuestion.kanji.meaning}</span> : currentQuestion.kanji.char}
+                            {currentQuestion.type === 'reverse' ? (
+                                <span className="text-3xl md:text-6xl max-w-2xl block leading-tight">{currentQuestion.kanji.meaning}</span>
+                            ) : currentQuestion.type === 'reading_reverse' ? (
+                                <span className="text-3xl md:text-6xl max-w-2xl block leading-tight">
+                                    {currentQuestion.kanji.onyomi.join(', ') || currentQuestion.kanji.kunyomi.join(', ')}
+                                    {currentQuestion.kanji.onyomi.length > 0 && currentQuestion.kanji.kunyomi.length > 0 ? ` / ${currentQuestion.kanji.kunyomi.join(', ')}` : ''}
+                                </span>
+                            ) : (
+                                currentQuestion.kanji.char
+                            )}
                         </div>
-                        {currentQuestion.type === 'reverse' && <div className="text-sm md:text-lg opacity-60 mt-1 md:mt-2 font-mono uppercase tracking-widest">Identify Character</div>}
+                        {(currentQuestion.type === 'reverse' || currentQuestion.type === 'reading_reverse') && <div className="text-sm md:text-lg opacity-60 mt-1 md:mt-2 font-mono uppercase tracking-widest">Identify Character</div>}
                     </div>
 
                     <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 max-w-4xl shrink-0 pb-2">
@@ -276,7 +285,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                      {/* Action Bar - Sticky at bottom of card - Larger buttons */}
                      <div className="mt-4 pt-4 border-t-2 border-current/30 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 shrink-0">
                         <div className="flex gap-3 items-center justify-center md:justify-start min-h-[44px]">
-                            {!isRetry && (
+                            {mode === 'simulation' && !isRetry && (
                                 <>
                                     <span className="text-xs md:text-sm uppercase opacity-50 font-bold mr-2 hidden md:inline whitespace-nowrap">Override Rating:</span>
                                     <button onClick={() => manualGrade(3)} className="select-none px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Hard</button>
@@ -284,7 +293,7 @@ export const QuizMode: React.FC<QuizModeProps> = ({ questions, onComplete, setti
                                     <button onClick={() => manualGrade(5)} className="select-none px-4 py-2 md:py-3 border-2 border-current hover:bg-[var(--theme-color)] hover:text-black text-xs md:text-sm font-bold uppercase transition-colors min-w-[70px]">Easy</button>
                                 </>
                             )}
-                            {isRetry && (
+                            {mode === 'simulation' && isRetry && (
                                 <span className="text-xs md:text-sm uppercase opacity-50 font-bold italic">
                                     Rating recorded on first attempt.
                                 </span>
